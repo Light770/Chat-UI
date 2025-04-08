@@ -1,26 +1,176 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+/* Base styles */
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    
+    --radius: 0.5rem;
+  }
+ 
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 48%;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/* Chat UI Custom Components */
+@layer components {
+  /* Message Bubbles */
+  .message-bubble-user {
+    @apply bg-blue-500 text-white rounded-tr-lg rounded-tl-lg rounded-bl-lg rounded-br-sm px-4 py-2 max-w-[80%] shadow-sm;
+  }
+  
+  .message-bubble-ai {
+    @apply bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-tl-lg rounded-tr-lg rounded-br-lg rounded-bl-sm px-4 py-2 max-w-[80%] shadow-sm;
+  }
+  
+  .message-bubble-system {
+    @apply bg-yellow-50 dark:bg-yellow-900/20 text-gray-900 dark:text-yellow-100 rounded-lg border border-yellow-200 dark:border-yellow-800 px-4 py-2 max-w-[90%] text-sm;
+  }
+
+  /* Custom Scrollbar */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 dark:bg-gray-600 rounded-full;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-400 dark:bg-gray-500;
+  }
+  
+  /* Typing Indicator Animation */
+  .typing-indicator span {
+    @apply bg-gray-500 dark:bg-gray-400 rounded-full inline-block h-1.5 w-1.5 mx-0.5 opacity-40;
+  }
+  
+  /* File Upload Zone */
+  .upload-zone {
+    @apply border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 transition-all duration-200;
+  }
+  
+  .upload-zone-active {
+    @apply border-blue-500 bg-blue-50 dark:bg-blue-900/20;
+  }
+  
+  /* Graph Visualization */
+  .graph-node {
+    @apply stroke-gray-300 dark:stroke-gray-600 stroke-2;
+  }
+  
+  .graph-link {
+    @apply stroke-gray-300 dark:stroke-gray-600 stroke-opacity-60;
+  }
+  
+  /* Code Block */
+  .code-block {
+    @apply font-mono text-sm rounded-lg overflow-hidden;
+  }
+  
+  .code-block-header {
+    @apply bg-gray-800 text-gray-200 px-4 py-2 flex items-center justify-between;
+  }
+  
+  .code-block-content {
+    @apply bg-gray-900 p-4 overflow-x-auto;
+  }
+}
+
+/* Animation for typing indicator */
+@keyframes pulse {
+  0% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+  100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+}
+
+.typing-indicator span:nth-child(1) {
+  animation: pulse 1s infinite 0.1s;
+}
+
+.typing-indicator span:nth-child(2) {
+  animation: pulse 1s infinite 0.3s;
+}
+
+.typing-indicator span:nth-child(3) {
+  animation: pulse 1s infinite 0.5s;
 }
