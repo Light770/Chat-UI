@@ -15,3 +15,5 @@ export { default as TypingIndicator } from './TypingIndicator';
 export { default as CommandPalette } from './CommandPalette';
 export { default as CodePanel } from './CodePanel';
 export { default as ResizablePanel } from './ResizablePanel';
+export { default as MessageOptions } from './MessageOptions';
+export { default as MessageEdit } from './MessageEdit';

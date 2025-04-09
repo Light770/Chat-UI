@@ -11,6 +11,8 @@ import CodePanel from './ChatUI/CodePanel';
 import ThemeToggle from './ChatUI/ThemeToggle';
 import ToolbarButton from './ChatUI/ToolbarButton';
 import ResizablePanel from './ChatUI/ResizablePanel';
+import MessageOptions from './ChatUI/MessageOptions';
+import MessageEdit from './ChatUI/MessageEdit';
 
 import { 
   ChatBubbleLeftRightIcon, 
@@ -185,7 +187,20 @@ function DataFetcher() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchData = async () => {try {const response = await fetch('https://api.example.com/data');const result = await response.json();setData(result);setLoading(false);} catch (err) {setError(err);setLoading(false);}};fetchData();, []);
+    const fetchData = async () => {
+      try {
+        const response = await fetch('https://api.example.com/data');
+        const result = await response.json();
+        setData(result);
+        setLoading(false);
+      } catch (err) {
+        setError(err);
+        setLoading(false);
+      }
+    };
+    
+    fetchData();
+  }, []);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
@@ -270,6 +285,58 @@ export default DataFetcher;`);
             width: `calc(100% - ${panelWidth}px)`
         };
     };
+
+    // Message modification handler
+    const handleMessageUpdate = useCallback((id: string, content: string) => {
+        setMessages(prev => 
+            prev.map(msg => 
+                msg.id === id 
+                    ? { ...msg, content } 
+                    : msg
+            )
+        );
+    }, []);
+
+    // Handle thumbs up feedback
+    const handleThumbsUp = useCallback((messageId: string) => {
+        console.log('Thumbs up for message:', messageId);
+        // In a real application, you would send this feedback to your backend
+    }, []);
+
+    // Handle thumbs down feedback
+    const handleThumbsDown = useCallback((messageId: string) => {
+        console.log('Thumbs down for message:', messageId);
+        // In a real application, you would send this feedback to your backend
+    }, []);
+
+    // Handle retry logic for AI messages
+    const handleRetry = useCallback((messageId: string) => {
+        // Find the user message that preceded this AI message
+        const messageIndex = messages.findIndex(msg => msg.id === messageId);
+        if (messageIndex <= 0) return;
+        
+        // Look for the most recent user message before this AI message
+        let userMessageIndex = messageIndex - 1;
+        while (userMessageIndex >= 0) {
+            if (messages[userMessageIndex].sender === 'user') {
+                break;
+            }
+            userMessageIndex--;
+        }
+        
+        if (userMessageIndex >= 0) {
+            // Get the user message
+            const userMessage = messages[userMessageIndex];
+            
+            // Remove all messages after and including this user message
+            setMessages(prev => prev.slice(0, userMessageIndex));
+            
+            // Re-send the user message to trigger a new AI response
+            setTimeout(() => {
+                handleSendMessage(userMessage.content);
+            }, 300);
+        }
+    }, [messages, handleSendMessage]);
 
     // Render panel content based on active panel
     const renderPanelContent = () => {
@@ -433,6 +500,7 @@ export default DataFetcher;`);
                             onSendMessage={handleSendMessage}
                             isTyping={isTyping}
                             className="flex-1"
+                            onRetry={handleRetry}
                         />
                     </div>
                     

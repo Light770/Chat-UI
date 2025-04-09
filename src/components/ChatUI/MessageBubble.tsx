@@ -1,17 +1,31 @@
 // components/ChatUI/MessageBubble.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import UserAvatar from './UserAvatar';
 import CodeBlock from './CodeBlock';
+import MessageOptions from './MessageOptions';
+import MessageEdit from './MessageEdit';
 import { ChatMessage, MessageType } from '../../types';
 import { LightBulbIcon, DocumentTextIcon, ChartBarIcon } from '@heroicons/react/24/outline';
 
 interface MessageBubbleProps {
   message: ChatMessage;
   showAvatar?: boolean;
+  onMessageUpdate?: (id: string, content: string) => void;
+  onRetry?: (id: string) => void;
+  onThumbsUp?: (id: string) => void;
+  onThumbsDown?: (id: string) => void;
 }
 
-const MessageBubble: React.FC<MessageBubbleProps> = ({ message, showAvatar = true }) => {
+const MessageBubble: React.FC<MessageBubbleProps> = ({ 
+  message, 
+  showAvatar = true,
+  onMessageUpdate,
+  onRetry,
+  onThumbsUp,
+  onThumbsDown
+}) => {
   const isUser = message.sender === 'user';
+  const [isEditing, setIsEditing] = useState(false);
   
   const renderContent = () => {
     switch (message.type) {
@@ -52,6 +66,25 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, showAvatar = tru
     }
   };
 
+  const handleCopy = (content: string) => {
+    navigator.clipboard.writeText(content);
+  };
+  
+  const handleModify = () => {
+    setIsEditing(true);
+  };
+  
+  const handleSaveEdit = (newContent: string) => {
+    if (onMessageUpdate) {
+      onMessageUpdate(message.id, newContent);
+    }
+    setIsEditing(false);
+  };
+  
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+  };
+
   return (
     <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-4 animate-fade-in`}>
       {!isUser && showAvatar && (
@@ -60,16 +93,38 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, showAvatar = tru
         </div>
       )}
       
-      <div className={`max-w-[80%] ${
-        isUser 
-          ? 'message-bubble-user' 
-          : 'message-bubble-ai backdrop-blur-md'
-      }`}>
-        {renderContent()}
-        {message.timestamp && (
-          <div className={`text-xs mt-1 ${isUser ? 'text-blue-100' : 'text-gray-500 dark:text-gray-400'}`}>
-            {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+      <div className="max-w-[80%] flex flex-col">
+        {isEditing ? (
+          <MessageEdit 
+            initialContent={message.content} 
+            onSave={handleSaveEdit}
+            onCancel={handleCancelEdit}
+            className={isUser ? 'bg-blue-100/30 dark:bg-blue-900/20' : ''}
+          />
+        ) : (
+          <div className={`${
+            isUser 
+              ? 'message-bubble-user' 
+              : 'message-bubble-ai backdrop-blur-md'
+          }`}>
+            {renderContent()}
+            {message.timestamp && (
+              <div className={`text-xs mt-1 ${isUser ? 'text-blue-100' : 'text-gray-500 dark:text-gray-400'}`}>
+                {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </div>
+            )}
           </div>
+        )}
+        
+        {!isEditing && (
+          <MessageOptions 
+            message={message}
+            onModify={handleModify}
+            onCopy={handleCopy}
+            onThumbsUp={onThumbsUp}
+            onThumbsDown={onThumbsDown}
+            onRetry={onRetry}
+          />
         )}
       </div>
       
