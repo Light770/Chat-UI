@@ -41,13 +41,20 @@ interface PanelConfig {
   icon: React.ReactNode;
 }
 
+// Expose a global function to update the code panel
+declare global {
+  interface Window {
+    updateCodePanel: (code: string, language: string) => void;
+  }
+}
+
 const ChatApplication = () => {
     const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
     const [isTyping, setIsTyping] = useState(false);
     const [selectedConversation, setSelectedConversation] = useState(
       getDefaultConversation().id
     );
-    const [activePanel, setActivePanel] = useState<'ai-features' | 'graph' | 'files' | 'code' | null>('code');
+    const [activePanel, setActivePanel] = useState<'ai-features' | 'graph' | 'files' | 'code' | null>(null);
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [isMobile, setIsMobile] = useState(false);
     
@@ -79,35 +86,331 @@ const ChatApplication = () => {
       },
     });
 
-    // Sample code for demonstration
-    const [currentCode, setCurrentCode] = useState(`// Sample code for demonstration
-import React, { useState } from 'react';
-
-const Counter = () => {
-  const [count, setCount] = useState(0);
-  
-  return (
-    <div className="p-4 bg-white rounded-lg shadow">
-      <h2 className="text-xl font-bold mb-2">Counter: {count}</h2>
-      <div className="flex space-x-2">
-        <button 
-          className="px-4 py-2 bg-blue-500 text-white rounded"
-          onClick={() => setCount(count + 1)}
-        >
-          Increment
-        </button>
-        <button 
-          className="px-4 py-2 bg-red-500 text-white rounded"
-          onClick={() => setCount(count - 1)}
-        >
-          Decrement
-        </button>
+    // Sample HTML code for demonstration (new default demo content)
+    const [currentCode, setCurrentCode] = useState(`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modern Landing Page</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background-color: #f8fafc;
+      color: #334155;
+      line-height: 1.6;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+    
+    header {
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      color: white;
+      padding: 2rem 0;
+    }
+    
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+    }
+    
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      opacity: 0.9;
+    }
+    
+    .nav-links a:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+    
+    .hero {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 4rem 0;
+    }
+    
+    .hero-content {
+      flex: 1;
+      max-width: 600px;
+    }
+    
+    .hero h1 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+    
+    .hero p {
+      font-size: 1.1rem;
+      margin-bottom: 2rem;
+    }
+    
+    .btn {
+      display: inline-block;
+      background-color: #4f46e5;
+      color: white;
+      padding: 0.8rem 1.5rem;
+      border-radius: 0.5rem;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+    
+    .btn:hover {
+      background-color: #4338ca;
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .features {
+      padding: 4rem 0;
+      background-color: white;
+    }
+    
+    .section-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    
+    .section-header h2 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+    
+    .section-header p {
+      color: #64748b;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+    
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+    
+    .feature-card {
+      background-color: #f8fafc;
+      border-radius: 0.5rem;
+      padding: 2rem;
+      transition: all 0.3s ease;
+      border: 1px solid #e2e8f0;
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+    }
+    
+    .feature-icon {
+      background-color: #4f46e5;
+      color: white;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+      font-size: 1.5rem;
+    }
+    
+    .feature-card h3 {
+      margin-bottom: 1rem;
+    }
+    
+    footer {
+      background-color: #1e293b;
+      color: #e2e8f0;
+      padding: 3rem 0;
+    }
+    
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 2rem;
+    }
+    
+    .footer-section {
+      flex: 1;
+      min-width: 200px;
+    }
+    
+    .footer-section h3 {
+      margin-bottom: 1.5rem;
+      font-size: 1.2rem;
+    }
+    
+    .footer-links {
+      list-style: none;
+    }
+    
+    .footer-links li {
+      margin-bottom: 0.8rem;
+    }
+    
+    .footer-links a {
+      color: #cbd5e1;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+    
+    .footer-links a:hover {
+      color: white;
+    }
+    
+    .copyright {
+      text-align: center;
+      padding-top: 2rem;
+      margin-top: 2rem;
+      border-top: 1px solid #334155;
+      color: #94a3b8;
+    }
+    
+    @media (max-width: 768px) {
+      .hero {
+        flex-direction: column;
+      }
+      
+      .hero-content {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+      
+      .nav-links {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <nav>
+        <div class="logo">ModernUI</div>
+        <div class="nav-links">
+          <a href="#">Home</a>
+          <a href="#">Features</a>
+          <a href="#">Pricing</a>
+          <a href="#">About</a>
+          <a href="#">Contact</a>
+        </div>
+      </nav>
+      <div class="hero">
+        <div class="hero-content">
+          <h1>Beautiful, Modern Websites Made Simple</h1>
+          <p>Create stunning, responsive websites in minutes with our intuitive design tools and pre-built components.</p>
+          <a href="#" class="btn">Get Started</a>
+        </div>
       </div>
     </div>
-  );
-};
+  </header>
+  
+  <section class="features">
+    <div class="container">
+      <div class="section-header">
+        <h2>Key Features</h2>
+        <p>Our platform provides everything you need to build and launch your website quickly and efficiently.</p>
+      </div>
+      
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-icon">✨</div>
+          <h3>Responsive Design</h3>
+          <p>All components are fully responsive and work seamlessly across devices.</p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon">🚀</div>
+          <h3>Performance Optimized</h3>
+          <p>Lightning-fast loading times with optimized code and assets.</p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon">🎨</div>
+          <h3>Customizable</h3>
+          <p>Easily change colors, fonts, and layouts to match your brand.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>ModernUI</h3>
+          <p>Building the future of web design with modern tools and technologies.</p>
+        </div>
+        
+        <div class="footer-section">
+          <h3>Links</h3>
+          <ul class="footer-links">
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Features</a></li>
+            <li><a href="#">Pricing</a></li>
+            <li><a href="#">About</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-section">
+          <h3>Support</h3>
+          <ul class="footer-links">
+            <li><a href="#">Documentation</a></li>
+            <li><a href="#">FAQ</a></li>
+            <li><a href="#">Community</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="copyright">
+        <p>&copy; 2025 ModernUI. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>`);
 
-export default Counter;`);
+    // Create a global function to update the code panel 
+    useEffect(() => {
+      // Define the global function
+      window.updateCodePanel = (code: string, language: string) => {
+        console.log('Setting code panel:', code.substring(0, 100));
+        setCurrentCode(code);
+        setActivePanel('code'); // Activate the code panel
+      };
+      
+      return () => {
+        // Clean up by removing the global function when component unmounts
+        delete window.updateCodePanel;
+      };
+    }, []);
 
     // Check if we're on mobile and adjust sidebar accordingly
     useEffect(() => {
@@ -161,93 +464,129 @@ export default Counter;`);
         
         // Simulate AI response
         setTimeout(() => {
-            const aiMessage: ChatMessage = {
-                id: `ai-${Date.now()}`,
-                content: simulateAIResponse(content),
-                sender: 'ai',
-                type: MessageType.TEXT,
-                timestamp: new Date()
-            };
-            
-            setMessages(prev => [...prev, aiMessage]);
-            setIsTyping(false);
-            
-            // Context-based panel activation
-            if (content.toLowerCase().includes('code') || content.toLowerCase().includes('function')) {
-                setActivePanel('code');
+            // Check if the user is asking for HTML or code example
+            if (content.toLowerCase().includes('html') || 
+                content.toLowerCase().includes('website') || 
+                content.toLowerCase().includes('landing page')) {
+                const htmlMessage: ChatMessage = {
+                    id: `ai-${Date.now()}`,
+                    content: currentCode,
+                    sender: 'ai',
+                    type: MessageType.CODE,
+                    language: 'html',
+                    timestamp: new Date()
+                };
                 
-                // For demo: If user asks for code, update the code panel
-                if (content.toLowerCase().includes('react') || content.toLowerCase().includes('component')) {
-                    setCurrentCode(`// React component example
-import React, { useState, useEffect } from 'react';
-
-function DataFetcher() {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch('https://api.example.com/data');
-        const result = await response.json();
-        setData(result);
-        setLoading(false);
-      } catch (err) {
-        setError(err);
-        setLoading(false);
+                setMessages(prev => [...prev, htmlMessage]);
+                setActivePanel('code');
+            } else if (content.toLowerCase().includes('css') || 
+                      content.toLowerCase().includes('style') || 
+                      content.toLowerCase().includes('design')) {
+                // Extract just the CSS part from the current HTML
+                const cssContent = currentCode.substring(
+                    currentCode.indexOf('<style>') + 8, 
+                    currentCode.indexOf('</style>')
+                );
+                
+                const cssMessage: ChatMessage = {
+                    id: `ai-${Date.now()}`,
+                    content: cssContent,
+                    sender: 'ai',
+                    type: MessageType.CODE,
+                    language: 'css',
+                    timestamp: new Date()
+                };
+                
+                setMessages(prev => [...prev, cssMessage]);
+                setActivePanel('code');
+            } else if (content.toLowerCase().includes('code') || 
+                      content.toLowerCase().includes('function') ||
+                      content.toLowerCase().includes('program')) {
+                // Respond with JavaScript code example
+                const jsCode = `function createResponsiveNavbar() {
+  const navbar = document.querySelector('.navbar');
+  const toggleButton = document.querySelector('.navbar-toggle');
+  
+  toggleButton.addEventListener('click', () => {
+    navbar.classList.toggle('active');
+  });
+  
+  // Handle responsive behavior
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 768) {
+      navbar.classList.remove('active');
+    }
+  });
+  
+  // Add smooth scrolling to all navigation links
+  const navLinks = document.querySelectorAll('.nav-links a');
+  navLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      
+      const targetId = link.getAttribute('href').substring(1);
+      const targetElement = document.getElementById(targetId);
+      
+      if (targetElement) {
+        window.scrollTo({
+          top: targetElement.offsetTop - 80,
+          behavior: 'smooth'
+        });
+        
+        // Close mobile menu after clicking a link
+        navbar.classList.remove('active');
       }
-    };
-    
-    fetchData();
-  }, []);
-
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error.message}</div>;
-
-  return (
-    <div className="data-container">
-      <h2>Data Results</h2>
-      <ul>
-        {data.map((item, index) => (
-          <li key={index}>{item.name}</li>
-        ))}
-      </ul>
-    </div>
-  );
+    });
+  });
 }
 
-export default DataFetcher;`);
-                }
-            } else if (content.toLowerCase().includes('graph') || content.toLowerCase().includes('visualize')) {
-                setActivePanel('graph');
-            } else if (content.toLowerCase().includes('file') || content.toLowerCase().includes('document')) {
-                setActivePanel('files');
+// Call the function when DOM is fully loaded
+document.addEventListener('DOMContentLoaded', createResponsiveNavbar);`;
+                
+                const jsMessage: ChatMessage = {
+                    id: `ai-${Date.now()}`,
+                    content: jsCode,
+                    sender: 'ai',
+                    type: MessageType.CODE,
+                    language: 'javascript',
+                    timestamp: new Date()
+                };
+                
+                setMessages(prev => [...prev, jsMessage]);
+                setCurrentCode(jsCode);
+                setActivePanel('code');
+            } else {
+                const aiMessage: ChatMessage = {
+                    id: `ai-${Date.now()}`,
+                    content: simulateAIResponse(content),
+                    sender: 'ai',
+                    type: MessageType.TEXT,
+                    timestamp: new Date()
+                };
+                
+                setMessages(prev => [...prev, aiMessage]);
             }
+            setIsTyping(false);
         }, 1500);
-    }, [isMobile, isSidebarOpen]);
+    }, [isMobile, isSidebarOpen, currentCode]);
 
     // Simulate AI response
     const simulateAIResponse = (userMessage: string) => {
         const lowerMessage = userMessage.toLowerCase();
         
         if (lowerMessage.includes('help')) {
-            return "I'm here to assist you. What specific help do you need?";
+            return "I'm here to assist you. Try asking for HTML code examples, CSS styling, or JavaScript functions. I can show you working examples with live previews.";
         }
         
         if (lowerMessage.includes('project') || lowerMessage.includes('planning')) {
-            return "For project planning, I can help break down tasks, estimate timelines, and suggest best practices.";
+            return "For project planning, I can help break down tasks, estimate timelines, and suggest best practices. Would you like me to show you some HTML structure for a project planning page?";
         }
         
         if (lowerMessage.includes('data') || lowerMessage.includes('analysis')) {
-            return "I can help you analyze data, create visualizations, and provide insights.";
+            return "I can help you analyze data, create visualizations, and provide insights. Would you like to see a code example for data visualization?";
         }
         
-        if (lowerMessage.includes('code') || lowerMessage.includes('function')) {
-            return "I've generated a code example based on your request. You can see it in the code panel.";
-        }
-        
-        return `I'm processing your request about: "${userMessage.substring(0, 30)}${userMessage.length > 30 ? '...' : ''}"`;
+        return `I'm here to help with web development and coding examples. Try asking me for HTML code, CSS styling tips, or JavaScript functions!`;
     };
 
     // Panel toggle
@@ -338,6 +677,21 @@ export default DataFetcher;`);
         }
     }, [messages, handleSendMessage]);
 
+    // Determine the language of the current code
+    const getCodeLanguage = () => {
+      if (currentCode.includes('<!DOCTYPE html>') || currentCode.includes('<html')) {
+        return 'html';
+      }
+      if (currentCode.includes('function') || currentCode.includes('const ') || currentCode.includes('var ')) {
+        return 'javascript';
+      }
+      if (currentCode.includes('{') && currentCode.includes('}') && 
+          (currentCode.includes('color:') || currentCode.includes('margin:') || currentCode.includes('padding:'))) {
+        return 'css';
+      }
+      return 'javascript';
+    };
+
     // Render panel content based on active panel
     const renderPanelContent = () => {
         switch (activePanel) {
@@ -345,7 +699,7 @@ export default DataFetcher;`);
                 return (
                     <CodePanel 
                         code={currentCode}
-                        language="javascript" 
+                        language={getCodeLanguage()}
                         onCodeChange={setCurrentCode}
                         onClose={() => setActivePanel(null)}
                     />

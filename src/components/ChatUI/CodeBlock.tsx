@@ -1,6 +1,6 @@
-// components/ChatUI/CodeBlock.tsx
+// src/components/ChatUI/CodeBlock.tsx
 import React, { useState } from 'react';
-import { ClipboardDocumentIcon, ClipboardDocumentCheckIcon } from '@heroicons/react/24/outline';
+import { DocumentDuplicateIcon, ClipboardDocumentCheckIcon } from '@heroicons/react/24/outline';
 
 interface CodeBlockProps {
   code: string;
@@ -23,69 +23,43 @@ const CodeBlock: React.FC<CodeBlockProps> = ({
     setTimeout(() => setCopied(false), 2000);
   };
 
-  // Format language display
-  const formatLanguage = (lang: string) => {
-    const langMap: Record<string, string> = {
-      'js': 'JavaScript',
-      'javascript': 'JavaScript',
-      'ts': 'TypeScript',
-      'typescript': 'TypeScript',
-      'py': 'Python',
-      'python': 'Python',
-      'jsx': 'React JSX',
-      'tsx': 'React TSX',
-      'html': 'HTML',
-      'css': 'CSS',
-      'json': 'JSON',
-      'md': 'Markdown',
-      'bash': 'Bash',
-      'sh': 'Shell',
-    };
-
-    return langMap[lang.toLowerCase()] || lang;
-  };
-
   const codeLines = code.split('\n');
   
   return (
-    <div className={`relative rounded-xl overflow-hidden glass-effect backdrop-blur-md ${className}`}>
+    <div className={`relative rounded-lg overflow-hidden shadow-sm ${className}`}>
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-2 bg-gray-800/90 text-gray-200 border-b border-white/10">
-        <span className="text-sm font-mono">{formatLanguage(language)}</span>
+      <div className="flex items-center justify-between px-3 py-2 bg-gray-800 text-gray-200 border-b border-gray-700">
+        <span className="text-xs font-medium">{language.toUpperCase()}</span>
         <button 
           onClick={copyToClipboard}
           className="text-gray-400 hover:text-white transition-colors duration-200"
           aria-label="Copy code"
         >
           {copied ? (
-            <ClipboardDocumentCheckIcon className="h-5 w-5 text-green-400" />
+            <ClipboardDocumentCheckIcon className="h-4 w-4 text-green-400" />
           ) : (
-            <ClipboardDocumentIcon className="h-5 w-5" />
+            <DocumentDuplicateIcon className="h-4 w-4" />
           )}
         </button>
       </div>
       
       {/* Code container */}
-      <div className="relative overflow-x-auto bg-gray-900/90 p-4">
-        <pre className="text-sm font-mono language-highlight">
-          <code className={`language-${language}`}>
+      <div className="overflow-x-auto bg-gray-900 text-gray-200">
+        <pre className="text-sm font-mono p-4">
+          <code>
             {showLineNumbers ? (
-              <table className="min-w-full">
+              <table className="min-w-full border-collapse">
                 <tbody>
                   {codeLines.map((line, i) => (
-                    <tr key={i} className="leading-relaxed">
-                      <td className="text-right pr-4 select-none text-gray-500 w-12 border-r border-gray-700/50">
-                        {i + 1}
-                      </td>
-                      <td className="text-gray-200 whitespace-pre pl-4">
-                        {line || ' '}
-                      </td>
+                    <tr key={i} className="leading-relaxed hover:bg-gray-800/50">
+                      <td className="text-right pr-4 select-none text-gray-500 w-8 text-xs">{i + 1}</td>
+                      <td className="whitespace-pre pl-2">{line || ' '}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             ) : (
-              <div className="text-gray-200 whitespace-pre-wrap">{code}</div>
+              <div className="whitespace-pre-wrap">{code}</div>
             )}
           </code>
         </pre>

@@ -17,3 +17,4 @@ export { default as CodePanel } from './CodePanel';
 export { default as ResizablePanel } from './ResizablePanel';
 export { default as MessageOptions } from './MessageOptions';
 export { default as MessageEdit } from './MessageEdit';
+export { default as FullPagePreview } from './FullPagePreview';

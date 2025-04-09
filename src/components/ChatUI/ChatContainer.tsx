@@ -71,7 +71,7 @@ const ChatContainer: React.FC<ChatContainerProps> = ({
 
   return (
     <div className={`flex flex-col h-full glass-effect-colored backdrop-blur-lg ${className}`}>
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
+      <div className="flex-1 overflow-y-auto py-6 px-4 md:px-8 space-y-6 custom-scrollbar">
         {localMessages.length === 0 && (
           <div className="h-full flex items-center justify-center">
             <div className="text-center glass-effect p-8 rounded-2xl max-w-md">
@@ -83,25 +83,33 @@ const ChatContainer: React.FC<ChatContainerProps> = ({
           </div>
         )}
         
-        {localMessages.map((message, index) => (
-          <MessageBubble 
-            key={message.id} 
-            message={message}
-            showAvatar={index === 0 || localMessages[index - 1].sender !== message.sender}
-            onMessageUpdate={handleMessageUpdate}
-            onThumbsUp={handleThumbsUp}
-            onThumbsDown={handleThumbsDown}
-            onRetry={handleRetry}
-          />
-        ))}
-        {isTyping && <TypingIndicator />}
+        <div className="w-full max-w-5xl mx-auto space-y-6">
+          {localMessages.map((message, index) => (
+            <MessageBubble 
+              key={message.id} 
+              message={message}
+              showAvatar={index === 0 || localMessages[index - 1].sender !== message.sender}
+              onMessageUpdate={handleMessageUpdate}
+              onThumbsUp={handleThumbsUp}
+              onThumbsDown={handleThumbsDown}
+              onRetry={handleRetry}
+            />
+          ))}
+          {isTyping && (
+            <div className="w-full max-w-5xl mx-auto">
+              <TypingIndicator />
+            </div>
+          )}
+        </div>
         <div ref={messagesEndRef} />
       </div>
       <div className="p-4 glass-effect backdrop-blur-md border-t border-white/20 dark:border-gray-700/30">
-        <ChatInput 
-          onSendMessage={onSendMessage} 
-          onFileUpload={onFileUpload}
-        />
+        <div className="max-w-4xl mx-auto">
+          <ChatInput 
+            onSendMessage={onSendMessage} 
+            onFileUpload={onFileUpload}
+          />
+        </div>
       </div>
     </div>
   );
