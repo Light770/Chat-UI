@@ -23,7 +23,9 @@ const GraphVisualizer: React.FC<GraphVisualizerProps> = ({
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(initialWidth);
-
+  const [selectedNode, setSelectedNode] = useState<Node | null>(null);
+  const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
+  
   // Handle responsive sizing
   useEffect(() => {
     if (!responsive || !containerRef.current) return;
@@ -181,9 +183,12 @@ const GraphVisualizer: React.FC<GraphVisualizerProps> = ({
       .force('center', d3.forceCenter(width / 2, height / 2))
       .force('collide', d3.forceCollide().radius(30));
 
+    // Main container for all links (lowest z-index)
+    const linksGroup = svg.append('g')
+      .attr('class', 'links-group');
+
     // Create links with gradient and translucent effect
-    const link = svg.append('g')
-      .selectAll('line')
+    const link = linksGroup.selectAll('line')
       .data(data.links)
       .join('line')
       .attr('stroke', 'rgba(150, 150, 150, 0.3)')
@@ -192,7 +197,7 @@ const GraphVisualizer: React.FC<GraphVisualizerProps> = ({
       .attr('stroke-dasharray', (d: Link) => d.type === 'dashed' ? '5,5' : 'none');
 
     // Create link labels if they have labels
-    const linkLabel = svg.append('g')
+    const linkLabel = linksGroup.append('g')
       .attr('class', 'link-labels')
       .selectAll('text')
       .data(data.links.filter((d: Link) => d.label))
@@ -204,13 +209,36 @@ const GraphVisualizer: React.FC<GraphVisualizerProps> = ({
       .attr('filter', 'url(#glow)')
       .text((d: Link) => d.label || '');
 
+    // Container for all nodes (higher z-index)
+    const nodesGroup = svg.append('g')
+      .attr('class', 'nodes-group');
+
     // Create node groups
-    const node = svg.append('g')
-      .selectAll('g')
+    const node = nodesGroup.selectAll('g')
       .data(data.nodes)
       .join('g')
       .call(drag(simulation) as any)
       .on('click', function(event: any, d: Node) {
+        event.stopPropagation(); // Prevent event propagation
+        
+        // Get coordinates - important for tooltip positioning
+        const rect = containerRef.current?.getBoundingClientRect();
+        if (rect) {
+          const x = event.clientX - rect.left;
+          const y = event.clientY - rect.top;
+          
+          setTooltipPos({ x, y });
+        }
+        
+        if (selectedNode && selectedNode.id === d.id) {
+          // If clicking the same node, deselect it
+          setSelectedNode(null);
+        } else {
+          // Select new node
+          setSelectedNode(d);
+        }
+        
+        // Call external handler if provided
         if (onNodeClick) onNodeClick(d);
       });
 
@@ -239,54 +267,32 @@ const GraphVisualizer: React.FC<GraphVisualizerProps> = ({
 
     // Handle hover effects
     node.on('mouseover', function(event: any, d: Node) {
+      // Grow the node slightly
       d3.select(this).select('circle:nth-child(2)')
         .transition()
         .duration(300)
         .attr('r', (d: Node) => (d.size || 15) * 1.2);
         
-      showTooltip(event, d);
+      // Get coordinates for hover tooltip
+      const rect = containerRef.current?.getBoundingClientRect();
+      if (rect) {
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        
+        setTooltipPos({ x, y });
+      }
     })
     .on('mouseout', function(event: any, d: Node) {
       d3.select(this).select('circle:nth-child(2)')
         .transition()
         .duration(300)
         .attr('r', (d: Node) => d.size || 15);
-        
-      hideTooltip();
     });
 
-    // Create and configure tooltip
-    const tooltip = d3.select('body')
-      .append('div')
-      .attr('class', 'graph-tooltip glass-effect')
-      .style('position', 'absolute')
-      .style('visibility', 'hidden')
-      .style('background-color', 'rgba(255, 255, 255, 0.8)')
-      .style('backdrop-filter', 'blur(8px)')
-      .style('border', '1px solid rgba(255, 255, 255, 0.3)')
-      .style('padding', '10px')
-      .style('border-radius', '8px')
-      .style('pointer-events', 'none')
-      .style('font-size', '12px')
-      .style('box-shadow', '0 4px 15px rgba(0, 0, 0, 0.1)');
-
-    function showTooltip(event: any, d: Node) {
-      tooltip
-        .style('visibility', 'visible')
-        .html(`
-          <div>
-            <strong class="text-blue-600">ID:</strong> ${d.id}<br/>
-            <strong class="text-blue-600">Type:</strong> ${d.type}<br/>
-            ${d.content ? `<strong class="text-blue-600">Content:</strong> ${d.content.substring(0, 100)}${d.content.length > 100 ? '...' : ''}` : ''}
-          </div>
-        `)
-        .style('left', (event.pageX + 15) + 'px')
-        .style('top', (event.pageY - 30) + 'px');
-    }
-
-    function hideTooltip() {
-      tooltip.style('visibility', 'hidden');
-    }
+    // Handle click on SVG background to deselect
+    svg.on('click', () => {
+      setSelectedNode(null);
+    });
 
     // Update positions on simulation tick
     simulation.on('tick', () => {
@@ -332,19 +338,64 @@ const GraphVisualizer: React.FC<GraphVisualizerProps> = ({
         .on('drag', dragged)
         .on('end', dragended);
     }
-
-    // Clean up tooltip when component unmounts
-    return () => {
-      tooltip.remove();
-    };
   }, [data, width, height, onNodeClick]);
+
+  // Generate tooltip content from node data
+  const renderNodeContent = (node: Node) => {
+    return (
+      <div className="flex flex-col space-y-2">
+        <div className="font-bold text-blue-700 dark:text-blue-400 text-sm">{node.id}</div>
+        <div><strong className="text-blue-600 dark:text-blue-300">Type:</strong> {node.type}</div>
+        {node.content && (
+          <div>
+            <strong className="text-blue-600 dark:text-blue-300">Content:</strong> 
+            <div className="mt-1 p-2 bg-gray-100 dark:bg-gray-700 rounded text-gray-800 dark:text-gray-200 max-h-40 overflow-y-auto text-xs">
+              {node.content}
+            </div>
+          </div>
+        )}
+        {Object.entries(node)
+          .filter(([key]) => !['id', 'type', 'content', 'size', 'index', 'x', 'y', 'vx', 'vy'].includes(key))
+          .map(([key, value]) => (
+            <div key={key}>
+              <strong className="text-blue-600 dark:text-blue-300">{key}:</strong> {String(value)}
+            </div>
+          ))
+        }
+      </div>
+    );
+  };
 
   return (
     <div 
       ref={containerRef} 
-      className={`graph-visualizer glass-effect rounded-xl p-2 w-full ${className}`}
+      className={`graph-visualizer glass-effect rounded-xl p-2 w-full relative ${className}`}
     >
       <svg ref={svgRef} className="rounded-lg overflow-hidden" />
+      
+      {/* Rendered tooltip with absolute positioning */}
+      {selectedNode && (
+        <div 
+          className="absolute glass-effect p-3 rounded-lg max-w-xs z-50"
+          style={{ 
+            left: `${tooltipPos.x + 15}px`, 
+            top: `${tooltipPos.y - 15}px`,
+            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+            boxShadow: '0 4px 15px rgba(0, 0, 0, 0.1)',
+            border: '1px solid rgba(255, 255, 255, 0.3)',
+            pointerEvents: 'auto',
+            backdropFilter: 'blur(5px)',
+          }}
+        >
+          <button 
+            className="absolute top-1 right-1 w-6 h-6 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center"
+            onClick={() => setSelectedNode(null)}
+          >
+            ✕
+          </button>
+          {renderNodeContent(selectedNode)}
+        </div>
+      )}
     </div>
   );
 };

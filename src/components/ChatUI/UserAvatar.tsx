@@ -31,12 +31,12 @@ const UserAvatar: React.FC<UserAvatarProps> = ({
 
   const getAvatarSize = () => {
     switch (size) {
-      case 'xs': return 'h-6 w-6 text-xs';
-      case 'sm': return 'h-8 w-8 text-sm';
-      case 'md': return 'h-10 w-10 text-base';
-      case 'lg': return 'h-12 w-12 text-lg';
-      case 'xl': return 'h-16 w-16 text-xl';
-      default: return 'h-10 w-10 text-base';
+      case 'xs': return 'h-5 w-5 text-xs';
+      case 'sm': return 'h-7 w-7 text-xs';
+      case 'md': return 'h-9 w-9 text-sm';
+      case 'lg': return 'h-11 w-11 text-base';
+      case 'xl': return 'h-14 w-14 text-lg';
+      default: return 'h-9 w-9 text-sm';
     }
   };
 
@@ -46,7 +46,7 @@ const UserAvatar: React.FC<UserAvatarProps> = ({
       case 'sm': return 'h-2 w-2';
       case 'md': return 'h-2.5 w-2.5';
       case 'lg': return 'h-3 w-3';
-      case 'xl': return 'h-4 w-4';
+      case 'xl': return 'h-3.5 w-3.5';
       default: return 'h-2.5 w-2.5';
     }
   };
@@ -99,16 +99,16 @@ const UserAvatar: React.FC<UserAvatarProps> = ({
         <img
           src={user.avatarUrl}
           alt={`${user.name}'s avatar`}
-          className={`${getAvatarSize()} rounded-full object-cover shadow-md border border-white/30 dark:border-gray-700/30`}
+          className={`${getAvatarSize()} rounded-full object-cover shadow-sm border border-white/30 dark:border-gray-700/30`}
         />
       ) : (
-        <div className={`${getAvatarSize()} ${getBackgroundColor()} rounded-full flex items-center justify-center text-white font-medium shadow-md`}>
+        <div className={`${getAvatarSize()} ${getBackgroundColor()} rounded-full flex items-center justify-center text-white font-medium shadow-sm`}>
           {getInitials(user.name)}
         </div>
       )}
       
       {showStatus && user.status && (
-        <span className={`absolute ${getStatusPosition()} ${getStatusSize()} ${getStatusColor()} rounded-full ring-2 ring-white dark:ring-gray-800`} />
+        <span className={`absolute ${getStatusPosition()} ${getStatusSize()} ${getStatusColor()} rounded-full ring-1 ring-white dark:ring-gray-800`} />
       )}
     </div>
   );
