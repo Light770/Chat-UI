@@ -1,5 +1,5 @@
 // components/ChatUI/GraphVisualizer.tsx
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import { Node, Link, GraphData } from '../../types';
 
@@ -9,16 +9,41 @@ interface GraphVisualizerProps {
   height?: number;
   onNodeClick?: (node: Node) => void;
   className?: string;
+  responsive?: boolean;
 }
 
 const GraphVisualizer: React.FC<GraphVisualizerProps> = ({
   data,
-  width = 600,
+  width: initialWidth = 600,
   height = 400,
   onNodeClick,
   className = '',
+  responsive = true,
 }) => {
   const svgRef = useRef<SVGSVGElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [width, setWidth] = useState(initialWidth);
+
+  // Handle responsive sizing
+  useEffect(() => {
+    if (!responsive || !containerRef.current) return;
+
+    const resizeObserver = new ResizeObserver(entries => {
+      for (const entry of entries) {
+        if (entry.contentRect) {
+          setWidth(entry.contentRect.width);
+        }
+      }
+    });
+
+    resizeObserver.observe(containerRef.current);
+
+    return () => {
+      if (containerRef.current) {
+        resizeObserver.unobserve(containerRef.current);
+      }
+    };
+  }, [responsive]);
 
   useEffect(() => {
     if (!svgRef.current || !data || !data.nodes || !data.links) return;
@@ -278,6 +303,11 @@ const GraphVisualizer: React.FC<GraphVisualizerProps> = ({
       node.attr('transform', (d: any) => `translate(${d.x},${d.y})`);
     });
 
+    // Reheat simulation when width changes
+    if (width) {
+      simulation.alpha(0.3).restart();
+    }
+
     // Drag functions
     function drag(simulation: d3.Simulation<d3.SimulationNodeDatum, undefined>) {
       function dragstarted(event: any) {
@@ -310,7 +340,10 @@ const GraphVisualizer: React.FC<GraphVisualizerProps> = ({
   }, [data, width, height, onNodeClick]);
 
   return (
-    <div className={`graph-visualizer glass-effect rounded-xl p-2 ${className}`}>
+    <div 
+      ref={containerRef} 
+      className={`graph-visualizer glass-effect rounded-xl p-2 w-full ${className}`}
+    >
       <svg ref={svgRef} className="rounded-lg overflow-hidden" />
     </div>
   );

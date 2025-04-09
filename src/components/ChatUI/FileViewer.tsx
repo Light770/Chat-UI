@@ -1,5 +1,5 @@
 // components/ChatUI/FileViewer.tsx
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
   DocumentIcon, 
   DocumentTextIcon, 
@@ -10,11 +10,9 @@ import {
   TableCellsIcon,
   MusicalNoteIcon,
   FilmIcon,
-  EyeIcon,
   ArrowDownTrayIcon,
   ChevronDownIcon,
-  ChevronUpIcon,
-  XMarkIcon
+  ChevronUpIcon
 } from '@heroicons/react/24/outline';
 import { Tab } from '@headlessui/react';
 import CodeBlock from './CodeBlock';
@@ -40,6 +38,41 @@ interface FileViewerProps {
 
 const FileViewer: React.FC<FileViewerProps> = ({ file, onClose, className = '' }) => {
   const [isExpanded, setIsExpanded] = useState(true);
+  const [previewHeight, setPreviewHeight] = useState(400);
+  const containerRef = useRef<HTMLDivElement>(null);
+  
+  // Adjust preview height based on container
+  useEffect(() => {
+    if (containerRef.current) {
+      const updateHeight = () => {
+        if (!containerRef.current) return;
+        
+        // Get container height and subtract header height
+        const containerHeight = containerRef.current.clientHeight;
+        const headerHeight = 80; // Approx. header height
+        const tabsHeight = 40; // Approx. tabs height
+        const padding = 40; // Some padding
+        
+        const availableHeight = containerHeight - headerHeight - tabsHeight - padding;
+        setPreviewHeight(Math.max(300, availableHeight));
+      };
+      
+      updateHeight();
+      
+      // Setup resize observer to update height when container resizes
+      const resizeObserver = new ResizeObserver(() => {
+        updateHeight();
+      });
+      
+      resizeObserver.observe(containerRef.current);
+      
+      return () => {
+        if (containerRef.current) {
+          resizeObserver.unobserve(containerRef.current);
+        }
+      };
+    }
+  }, []);
   
   const getFileIcon = (type: FileType) => {
     switch (type) {
@@ -83,7 +116,8 @@ const FileViewer: React.FC<FileViewerProps> = ({ file, onClose, className = '' }
               <img 
                 src={file.url} 
                 alt={file.name} 
-                className="max-w-full max-h-96 object-contain rounded-lg" 
+                className="max-w-full object-contain rounded-lg" 
+                style={{ maxHeight: `${previewHeight}px` }}
               />
             )}
           </div>
@@ -96,8 +130,9 @@ const FileViewer: React.FC<FileViewerProps> = ({ file, onClose, className = '' }
             {file.url ? (
               <iframe 
                 src={`${file.url}#toolbar=0`} 
-                className="w-full h-96 border-0 rounded-lg"
+                className="w-full border-0 rounded-lg"
                 title={file.name}
+                style={{ height: `${previewHeight}px` }}
               />
             ) : (
               <div className="flex items-center justify-center h-40 w-full border-2 border-dashed border-white/30 dark:border-gray-600/50 rounded-lg">
@@ -169,7 +204,11 @@ const FileViewer: React.FC<FileViewerProps> = ({ file, onClose, className = '' }
         return (
           <div className="mt-4">
             {file.url ? (
-              <video controls className="w-full max-h-96 rounded-lg glass-effect">
+              <video 
+                controls 
+                className="w-full rounded-lg glass-effect"
+                style={{ maxHeight: `${previewHeight}px` }}
+              >
                 <source src={file.url} type="video/mp4" />
                 Your browser does not support the video element.
               </video>
@@ -191,7 +230,10 @@ const FileViewer: React.FC<FileViewerProps> = ({ file, onClose, className = '' }
   };
 
   return (
-    <div className={`glass-effect rounded-2xl backdrop-blur-md overflow-hidden ${className}`}>
+    <div 
+      ref={containerRef}
+      className={`glass-effect rounded-2xl backdrop-blur-md overflow-hidden h-full ${className}`}
+    >
       <div className="p-4 border-b border-white/20 dark:border-gray-700/30 flex justify-between items-center">
         <div className="flex items-center space-x-3">
           {getFileIcon(file.type)}
@@ -222,20 +264,11 @@ const FileViewer: React.FC<FileViewerProps> = ({ file, onClose, className = '' }
               <ArrowDownTrayIcon className="h-5 w-5" />
             </a>
           )}
-          
-          {onClose && (
-            <button 
-              onClick={onClose}
-              className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 rounded-full hover:bg-white/20 dark:hover:bg-gray-800/30 glass-effect"
-            >
-              <XMarkIcon className="h-5 w-5" />
-            </button>
-          )}
         </div>
       </div>
       
       {isExpanded && (
-        <div className="p-4">
+        <div className="p-4 overflow-auto" style={{ maxHeight: `calc(100% - 80px)` }}>
           <Tab.Group>
             <Tab.List className="flex space-x-1 rounded-xl glass-effect p-1">
               <Tab

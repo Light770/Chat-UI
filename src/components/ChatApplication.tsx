@@ -10,6 +10,7 @@ import GraphVisualizer from './ChatUI/GraphVisualizer';
 import CodePanel from './ChatUI/CodePanel';
 import ThemeToggle from './ChatUI/ThemeToggle';
 import ToolbarButton from './ChatUI/ToolbarButton';
+import ResizablePanel from './ChatUI/ResizablePanel';
 
 import { 
   ChatBubbleLeftRightIcon, 
@@ -31,6 +32,13 @@ import {
     getDefaultConversation
 } from './sample-data/getDefaultConversation';
 
+interface PanelConfig {
+  id: 'ai-features' | 'graph' | 'files' | 'code';
+  width: number;
+  title: string;
+  icon: React.ReactNode;
+}
+
 const ChatApplication = () => {
     const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
     const [isTyping, setIsTyping] = useState(false);
@@ -40,11 +48,34 @@ const ChatApplication = () => {
     const [activePanel, setActivePanel] = useState<'ai-features' | 'graph' | 'files' | 'code' | null>('code');
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [isMobile, setIsMobile] = useState(false);
-    const [codePanelWidth, setCodePanelWidth] = useState(450);
-    const resizeRef = useRef<HTMLDivElement>(null);
-    const isResizingRef = useRef(false);
-    const startXRef = useRef(0);
-    const startWidthRef = useRef(0);
+    
+    // Panel configuration with width
+    const [panelConfigs, setPanelConfigs] = useState<Record<string, PanelConfig>>({
+      'code': { 
+        id: 'code', 
+        width: 450, 
+        title: 'Code Editor',
+        icon: <CodeBracketIcon className="h-5 w-5" /> 
+      },
+      'ai-features': { 
+        id: 'ai-features', 
+        width: 350, 
+        title: 'AI Features',
+        icon: <CogIcon className="h-5 w-5" /> 
+      },
+      'graph': { 
+        id: 'graph', 
+        width: 400, 
+        title: 'Knowledge Graph',
+        icon: <ChartBarIcon className="h-5 w-5" /> 
+      },
+      'files': { 
+        id: 'files', 
+        width: 350, 
+        title: 'Files',
+        icon: <DocumentTextIcon className="h-5 w-5" /> 
+      },
+    });
 
     // Sample code for demonstration
     const [currentCode, setCurrentCode] = useState(`// Sample code for demonstration
@@ -88,58 +119,23 @@ export default Counter;`);
             } else {
                 setIsSidebarOpen(true);
             }
-
-            // Adjust code panel width on mobile
-            if (isMobileView && codePanelWidth > 300) {
-                setCodePanelWidth(300);
-            }
         };
 
         checkMobile();
         window.addEventListener('resize', checkMobile);
         return () => window.removeEventListener('resize', checkMobile);
-    }, [codePanelWidth]);
+    }, []);
 
-    // Set up panel resize functionality
-    useEffect(() => {
-        const handleMouseDown = (e: MouseEvent) => {
-            if (resizeRef.current && resizeRef.current.contains(e.target as Node)) {
-                isResizingRef.current = true;
-                startXRef.current = e.clientX;
-                startWidthRef.current = codePanelWidth;
-                document.body.style.cursor = 'col-resize';
-                document.body.style.userSelect = 'none';
-            }
-        };
-
-        const handleMouseMove = (e: MouseEvent) => {
-            if (!isResizingRef.current) return;
-            
-            const delta = startXRef.current - e.clientX;
-            let newWidth = startWidthRef.current + delta;
-            
-            // Set min and max width limits
-            newWidth = Math.max(300, Math.min(800, newWidth));
-            
-            setCodePanelWidth(newWidth);
-        };
-
-        const handleMouseUp = () => {
-            isResizingRef.current = false;
-            document.body.style.removeProperty('cursor');
-            document.body.style.removeProperty('user-select');
-        };
-
-        document.addEventListener('mousedown', handleMouseDown);
-        document.addEventListener('mousemove', handleMouseMove);
-        document.addEventListener('mouseup', handleMouseUp);
-
-        return () => {
-            document.removeEventListener('mousedown', handleMouseDown);
-            document.removeEventListener('mousemove', handleMouseMove);
-            document.removeEventListener('mouseup', handleMouseUp);
-        };
-    }, [codePanelWidth]);
+    // Update panel width
+    const handlePanelResize = (panelId: string, newWidth: number) => {
+      setPanelConfigs(prev => ({
+        ...prev,
+        [panelId]: {
+          ...prev[panelId],
+          width: newWidth
+        }
+      }));
+    };
 
     // Message handling
     const handleSendMessage = useCallback((content: string) => {
@@ -274,15 +270,80 @@ export default DataFetcher;`);
         };
     };
 
-    // Calculate chat container width based on code panel
+    // Calculate chat container width based on active panel
     const getChatContainerStyle = () => {
-        if (isMobile || !activePanel || activePanel !== 'code') {
+        if (isMobile || !activePanel) {
             return { width: '100%' };
         }
         
+        // Use the width from panel config
+        const panelWidth = activePanel ? panelConfigs[activePanel]?.width || 0 : 0;
+        
         return {
-            width: `calc(100% - ${codePanelWidth}px)`
+            width: `calc(100% - ${panelWidth}px)`
         };
+    };
+
+    // Render panel content based on active panel
+    const renderPanelContent = () => {
+        switch (activePanel) {
+            case 'code':
+                return (
+                    <CodePanel 
+                        code={currentCode}
+                        language="javascript" 
+                        onCodeChange={setCurrentCode}
+                        onClose={() => setActivePanel(null)}
+                    />
+                );
+            case 'ai-features':
+                return (
+                    <AIFeaturesPanel
+                        features={[
+                            { 
+                                id: 'rag', 
+                                name: 'Retrieval Augmented Generation', 
+                                description: 'Enhance responses with document context' 
+                            }
+                        ]}
+                        models={[
+                            { 
+                                id: 'default', 
+                                name: 'Balanced Model', 
+                                description: 'Optimal performance and speed' 
+                            }
+                        ]}
+                        selectedModel="default"
+                        onToggleFeature={() => {}}
+                        onSelectModel={() => {}}
+                    />
+                );
+            case 'graph':
+                return (
+                    <div className="p-4">
+                        <GraphVisualizer
+                            data={sampleGraphData}
+                            height={400}
+                            onNodeClick={(node) => console.log('Node clicked', node)}
+                        />
+                    </div>
+                );
+            case 'files':
+                return (
+                    <FileViewer
+                        file={{
+                            id: 'sample-doc',
+                            name: 'project-overview.pdf',
+                            type: 'pdf',
+                            size: 2500000,
+                            lastModified: new Date()
+                        }}
+                        onClose={() => setActivePanel(null)}
+                    />
+                );
+            default:
+                return null;
+        }
     };
 
     return (
@@ -369,7 +430,7 @@ export default DataFetcher;`);
                     </div>
                 </div>
 
-                {/* Main content area with chat and code panel */}
+                {/* Main content area with chat and panels */}
                 <div className="flex-1 flex overflow-hidden">
                     {/* Chat Container */}
                     <div 
@@ -384,92 +445,20 @@ export default DataFetcher;`);
                         />
                     </div>
                     
-                    {/* Code Panel */}
-                    {activePanel === 'code' && (
-                        <>
-                            {/* Resize handle */}
-                            <div 
-                                ref={resizeRef}
-                                className="w-1 h-full bg-gray-300/50 dark:bg-gray-700/50 cursor-col-resize hover:bg-blue-500/50 transition-colors"
-                            />
-                            
-                            {/* Code panel */}
-                            <div 
-                                className="h-full overflow-auto glass-effect-strong backdrop-blur-xl border-l border-white/20 dark:border-gray-700/30 transition-all duration-300"
-                                style={{ width: `${codePanelWidth}px` }}
-                            >
-                                <CodePanel 
-                                    code={currentCode}
-                                    language="javascript" 
-                                    onCodeChange={setCurrentCode}
-                                    onClose={() => setActivePanel(null)}
-                                />
-                            </div>
-                        </>
-                    )}
-
-                    {/* Other panels */}
-                    {activePanel && activePanel !== 'code' && (
-                        <div className="fixed right-0 h-[calc(100%-4rem)] top-16 w-96 overflow-y-auto glass-effect backdrop-blur-xl border-l border-white/20 dark:border-gray-700/30">
-                            <div className="flex justify-between items-center p-4 border-b border-white/20 dark:border-gray-700/30">
-                                <h2 className="text-lg font-semibold gradient-text">
-                                    {activePanel === 'ai-features' ? 'AI Features' : 
-                                    activePanel === 'graph' ? 'Knowledge Graph' : 
-                                    'Document Viewer'}
-                                </h2>
-                                <button 
-                                    onClick={() => setActivePanel(null)}
-                                    className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 p-2 glass-effect rounded-full"
-                                >
-                                    <XMarkIcon className="h-5 w-5" />
-                                </button>
-                            </div>
-                            
-                            {activePanel === 'ai-features' && (
-                                <AIFeaturesPanel
-                                    features={[
-                                        { 
-                                            id: 'rag', 
-                                            name: 'Retrieval Augmented Generation', 
-                                            description: 'Enhance responses with document context' 
-                                        }
-                                    ]}
-                                    models={[
-                                        { 
-                                            id: 'default', 
-                                            name: 'Balanced Model', 
-                                            description: 'Optimal performance and speed' 
-                                        }
-                                    ]}
-                                    selectedModel="default"
-                                    onToggleFeature={() => {}}
-                                    onSelectModel={() => {}}
-                                />
-                            )}
-
-                            {activePanel === 'graph' && (
-                                <div className="p-4">
-                                    <GraphVisualizer
-                                        data={sampleGraphData}
-                                        height={400}
-                                        onNodeClick={(node) => console.log('Node clicked', node)}
-                                    />
-                                </div>
-                            )}
-
-                            {activePanel === 'files' && (
-                                <FileViewer
-                                    file={{
-                                        id: 'sample-doc',
-                                        name: 'project-overview.pdf',
-                                        type: 'pdf',
-                                        size: 2500000,
-                                        lastModified: new Date()
-                                    }}
-                                    onClose={() => setActivePanel(null)}
-                                />
-                            )}
-                        </div>
+                    {/* Resizable Side Panel */}
+                    {activePanel && !isMobile && (
+                        <ResizablePanel
+                            width={panelConfigs[activePanel].width}
+                            minWidth={250}
+                            maxWidth={800}
+                            position="right"
+                            onClose={() => setActivePanel(null)}
+                            onResize={(newWidth) => handlePanelResize(activePanel, newWidth)}
+                            title={panelConfigs[activePanel].title}
+                            isVisible={!!activePanel}
+                        >
+                            {renderPanelContent()}
+                        </ResizablePanel>
                     )}
                 </div>
 
@@ -478,10 +467,7 @@ export default DataFetcher;`);
                     <div className="fixed inset-x-0 bottom-0 z-50 glass-effect backdrop-blur-xl shadow-2xl rounded-t-2xl max-h-[80vh] overflow-y-auto">
                         <div className="p-4 border-b border-white/20 dark:border-gray-700/30 flex justify-between items-center">
                             <h2 className="text-lg font-semibold gradient-text">
-                                {activePanel === 'ai-features' ? 'AI Features' : 
-                                activePanel === 'graph' ? 'Knowledge Graph' : 
-                                activePanel === 'code' ? 'Code' : 
-                                'Document Viewer'}
+                                {activePanel && panelConfigs[activePanel]?.title}
                             </h2>
                             <button 
                                 onClick={() => setActivePanel(null)}
@@ -491,55 +477,7 @@ export default DataFetcher;`);
                             </button>
                         </div>
                         <div className="p-4">
-                            {activePanel === 'code' && (
-                                <CodePanel 
-                                    code={currentCode}
-                                    language="javascript" 
-                                    onCodeChange={setCurrentCode}
-                                    onClose={() => setActivePanel(null)}
-                                    isMobile={true}
-                                />
-                            )}
-                            {activePanel === 'ai-features' && (
-                                <AIFeaturesPanel
-                                    features={[
-                                        { 
-                                            id: 'rag', 
-                                            name: 'Retrieval Augmented Generation', 
-                                            description: 'Enhance responses with document context' 
-                                        }
-                                    ]}
-                                    models={[
-                                        { 
-                                            id: 'default', 
-                                            name: 'Balanced Model', 
-                                            description: 'Optimal performance and speed' 
-                                        }
-                                    ]}
-                                    selectedModel="default"
-                                    onToggleFeature={() => {}}
-                                    onSelectModel={() => {}}
-                                />
-                            )}
-                            {activePanel === 'graph' && (
-                                <GraphVisualizer
-                                    data={sampleGraphData}
-                                    height={300}
-                                    onNodeClick={(node) => console.log('Node clicked', node)}
-                                />
-                            )}
-                            {activePanel === 'files' && (
-                                <FileViewer
-                                    file={{
-                                        id: 'sample-doc',
-                                        name: 'project-overview.pdf',
-                                        type: 'pdf',
-                                        size: 2500000,
-                                        lastModified: new Date()
-                                    }}
-                                    onClose={() => setActivePanel(null)}
-                                />
-                            )}
+                            {renderPanelContent()}
                         </div>
                     </div>
                 )}

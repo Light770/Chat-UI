@@ -14,3 +14,4 @@ export { default as CodeBlock } from './CodeBlock';
 export { default as TypingIndicator } from './TypingIndicator';
 export { default as CommandPalette } from './CommandPalette';
 export { default as CodePanel } from './CodePanel';
+export { default as ResizablePanel } from './ResizablePanel';
