@@ -105,7 +105,7 @@ const ResizablePanel: React.FC<ResizablePanelProps> = ({
       {position === 'left' && (
         <div 
           ref={resizeRef}
-          className="relative w-2 h-full cursor-col-resize group"
+          className="resize-handle relative w-2 h-full cursor-col-resize group"
           title="Drag to resize"
         >
           {/* Visual indicator for resize handle */}
@@ -158,7 +158,7 @@ const ResizablePanel: React.FC<ResizablePanelProps> = ({
       {position === 'right' && (
         <div 
           ref={resizeRef}
-          className="relative w-3 h-full cursor-col-resize group"
+          className="resize-handle relative w-3 h-full cursor-col-resize group"
           title="Drag to resize"
         >
           {/* Visual indicator for resize handle */}
