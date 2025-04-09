@@ -185,20 +185,7 @@ function DataFetcher() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch('https://api.example.com/data');
-        const result = await response.json();
-        setData(result);
-        setLoading(false);
-      } catch (err) {
-        setError(err);
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
+    const fetchData = async () => {try {const response = await fetch('https://api.example.com/data');const result = await response.json();setData(result);setLoading(false);} catch (err) {setError(err);setLoading(false);}};fetchData();, []);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
@@ -406,24 +393,28 @@ export default DataFetcher;`);
                                 label="Code Panel"
                                 onClick={() => togglePanel('code')}
                                 active={activePanel === 'code'}
+                                className={activePanel === 'code' ? 'ring-2 ring-blue-500 ring-opacity-50' : ''}
                             />
                             <ToolbarButton
                                 icon={<ChartBarIcon className="h-5 w-5" />}
                                 label="Knowledge Graph"
                                 onClick={() => togglePanel('graph')}
                                 active={activePanel === 'graph'}
+                                className={activePanel === 'graph' ? 'ring-2 ring-blue-500 ring-opacity-50' : ''}
                             />
                             <ToolbarButton
                                 icon={<DocumentTextIcon className="h-5 w-5" />}
                                 label="Files"
                                 onClick={() => togglePanel('files')}
                                 active={activePanel === 'files'}
+                                className={activePanel === 'files' ? 'ring-2 ring-blue-500 ring-opacity-50' : ''}
                             />
                             <ToolbarButton
                                 icon={<CogIcon className="h-5 w-5" />}
                                 label="AI Features"
                                 onClick={() => togglePanel('ai-features')}
                                 active={activePanel === 'ai-features'}
+                                className={activePanel === 'ai-features' ? 'ring-2 ring-blue-500 ring-opacity-50' : ''}
                             />
                         </div>
                         <ThemeToggle />
@@ -447,18 +438,21 @@ export default DataFetcher;`);
                     
                     {/* Resizable Side Panel */}
                     {activePanel && !isMobile && (
-                        <ResizablePanel
-                            width={panelConfigs[activePanel].width}
-                            minWidth={250}
-                            maxWidth={800}
-                            position="right"
-                            onClose={() => setActivePanel(null)}
-                            onResize={(newWidth) => handlePanelResize(activePanel, newWidth)}
-                            title={panelConfigs[activePanel].title}
-                            isVisible={!!activePanel}
-                        >
-                            {renderPanelContent()}
-                        </ResizablePanel>
+                        <div className="relative h-full" style={{ zIndex: 10 }}>
+                            <ResizablePanel
+                                width={panelConfigs[activePanel].width}
+                                minWidth={250}
+                                maxWidth={800}
+                                position="right"
+                                onClose={() => setActivePanel(null)}
+                                onResize={(newWidth) => handlePanelResize(activePanel, newWidth)}
+                                title={panelConfigs[activePanel].title}
+                                isVisible={!!activePanel}
+                                className="shadow-lg"
+                            >
+                                {renderPanelContent()}
+                            </ResizablePanel>
+                        </div>
                     )}
                 </div>
 
