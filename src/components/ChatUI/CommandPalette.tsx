@@ -180,10 +180,10 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({
 
   return (
     <div 
-      className={`bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden ${className}`}
+      className={`glass-effect backdrop-blur-xl rounded-xl shadow-xl border border-white/20 dark:border-gray-700/30 overflow-hidden ${className}`}
       onKeyDown={handleKeyDown}
     >
-      <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center">
+      <div className="p-4 border-b border-white/20 dark:border-gray-700/30 flex items-center">
         <MagnifyingGlassIcon className="h-5 w-5 text-gray-400 dark:text-gray-500 mr-3" />
         <input
           ref={searchInputRef}
@@ -195,17 +195,17 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({
         />
         <button 
           onClick={onClose}
-          className="p-1 rounded-full text-gray-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-400"
+          className="p-1 rounded-full text-gray-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-400 glass-effect"
         >
           <XMarkIcon className="h-5 w-5" />
         </button>
       </div>
       
-      <div className="max-h-96 overflow-y-auto">
+      <div className="max-h-96 overflow-y-auto custom-scrollbar">
         {Object.entries(groupedCommands).length > 0 ? (
           Object.entries(groupedCommands).map(([category, categoryCommands]) => (
             <div key={category} className="py-2">
-              <div className="px-4 py-1 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <div className="px-4 py-1 text-xs font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent uppercase tracking-wider">
                 {category}
               </div>
               <div className="mt-1">
@@ -217,13 +217,13 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({
                     <button
                       key={command.id}
                       className={`
-                        w-full text-left px-4 py-2 flex items-start space-x-3
-                        ${isSelected ? 'bg-blue-50 dark:bg-blue-900/30' : 'hover:bg-gray-50 dark:hover:bg-gray-700/50'}
+                        w-full text-left px-4 py-2 flex items-start space-x-3 transition-all duration-200
+                        ${isSelected ? 'bg-blue-50/30 dark:bg-blue-900/30' : 'hover:bg-white/20 dark:hover:bg-gray-700/20'}
                       `}
                       onClick={() => onSelect(command.id)}
                       onMouseEnter={() => setSelectedIndex(commandIndex)}
                     >
-                      <div className={`p-1 rounded-lg ${isSelected ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'}`}>
+                      <div className={`p-1 rounded-lg ${isSelected ? 'text-blue-600 dark:text-blue-400 glass-effect' : 'text-gray-500 dark:text-gray-400'}`}>
                         {command.icon}
                       </div>
                       <div>
@@ -252,8 +252,8 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({
         )}
       </div>
       
-      <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-xs text-gray-500 dark:text-gray-400">
-        Press <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-gray-800 dark:text-gray-300 font-mono">↑</kbd> <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-gray-800 dark:text-gray-300 font-mono">↓</kbd> to navigate, <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-gray-800 dark:text-gray-300 font-mono">Enter</kbd> to select, <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-gray-800 dark:text-gray-300 font-mono">Esc</kbd> to dismiss
+      <div className="px-4 py-3 border-t border-white/20 dark:border-gray-700/30 glass-effect text-xs text-gray-500 dark:text-gray-400">
+        Press <kbd className="px-2 py-1 glass-effect rounded text-gray-800 dark:text-gray-300 font-mono">↑</kbd> <kbd className="px-2 py-1 glass-effect rounded text-gray-800 dark:text-gray-300 font-mono">↓</kbd> to navigate, <kbd className="px-2 py-1 glass-effect rounded text-gray-800 dark:text-gray-300 font-mono">Enter</kbd> to select, <kbd className="px-2 py-1 glass-effect rounded text-gray-800 dark:text-gray-300 font-mono">Esc</kbd> to dismiss
       </div>
     </div>
   );

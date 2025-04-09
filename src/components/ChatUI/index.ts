@@ -13,3 +13,4 @@ export { default as FileUploadZone } from './FileUploadZone';
 export { default as CodeBlock } from './CodeBlock';
 export { default as TypingIndicator } from './TypingIndicator';
 export { default as CommandPalette } from './CommandPalette';
+export { default as CodePanel } from './CodePanel';

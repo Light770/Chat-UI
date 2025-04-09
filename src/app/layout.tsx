@@ -24,9 +24,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${inter.variable}`}>
-      <body className="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 antialiased">
-        {/* ThemeProvider could be added here for global theme management */}
-        <main className="min-h-screen flex flex-col">
+      <body className="bg-gradient-to-br from-pink-50 to-blue-50 dark:from-gray-900 dark:to-blue-950 text-gray-900 dark:text-gray-100 antialiased h-screen w-screen overflow-hidden">
+        <main className="w-full h-full">
           {children}
         </main>
       </body>

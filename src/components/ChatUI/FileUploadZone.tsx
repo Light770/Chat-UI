@@ -144,9 +144,10 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({
     <div className={`space-y-4 ${className}`}>
       <div 
         className={`
-          border-2 border-dashed rounded-lg p-6 text-center
-          ${dragActive ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-300 dark:border-gray-600'}
-          ${error ? 'border-red-300 dark:border-red-800 bg-red-50 dark:bg-red-900/20' : ''}
+          border-2 border-dashed rounded-xl p-6 text-center transition-all duration-200
+          ${dragActive ? 'border-blue-500/70 bg-blue-50/30 dark:bg-blue-900/20' : 'border-white/30 dark:border-gray-600/50'}
+          ${error ? 'border-red-300/70 dark:border-red-800/50 bg-red-50/30 dark:bg-red-900/20' : ''}
+          glass-effect
         `}
         onDragEnter={handleDrag}
         onDragOver={handleDrag}
@@ -163,7 +164,7 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({
         />
         
         <div className="flex flex-col items-center justify-center">
-          <ArrowUpTrayIcon className={`h-10 w-10 mb-3 ${error ? 'text-red-500' : 'text-gray-400'}`} />
+          <ArrowUpTrayIcon className={`h-10 w-10 mb-3 ${error ? 'text-red-500' : 'text-blue-500 dark:text-blue-400'}`} />
           
           {error ? (
             <div className="text-red-600 dark:text-red-400 flex items-center">
@@ -203,9 +204,9 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({
             Selected files ({selectedFiles.length}/{maxFiles})
           </h4>
           
-          <div className="max-h-48 overflow-y-auto space-y-2 pr-2">
+          <div className="max-h-48 overflow-y-auto custom-scrollbar space-y-2 pr-2">
             {selectedFiles.map((file, index) => (
-              <div key={index} className="flex items-center justify-between bg-gray-50 dark:bg-gray-800 rounded-md p-2">
+              <div key={index} className="flex items-center justify-between glass-effect rounded-lg p-2">
                 <div className="flex items-center space-x-3 overflow-hidden">
                   {getFileIcon(file)}
                   <div className="min-w-0">
@@ -216,7 +217,7 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({
                 <button
                   type="button"
                   onClick={() => removeFile(index)}
-                  className="p-1 text-gray-400 hover:text-red-500 focus:outline-none"
+                  className="p-1 text-gray-400 hover:text-red-500 focus:outline-none glass-effect rounded-full"
                 >
                   <XMarkIcon className="h-5 w-5" />
                 </button>
@@ -230,7 +231,7 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({
         <button
           type="button"
           onClick={onCancel}
-          className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+          className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-white/20 dark:hover:bg-gray-700/30 rounded-full glass-effect"
         >
           Cancel
         </button>
@@ -239,10 +240,10 @@ const FileUploadZone: React.FC<FileUploadZoneProps> = ({
           onClick={handleSubmit}
           disabled={selectedFiles.length === 0 || !!error}
           className={`
-            px-4 py-2 text-sm font-medium rounded-md
+            px-4 py-2 text-sm font-medium rounded-full transition-all duration-300
             ${selectedFiles.length === 0 || !!error
-              ? 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
-              : 'bg-blue-600 text-white hover:bg-blue-700'
+              ? 'glass-effect text-gray-500 dark:text-gray-400 cursor-not-allowed'
+              : 'bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:shadow-lg'
             }
           `}
         >

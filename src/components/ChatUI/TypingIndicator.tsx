@@ -15,15 +15,15 @@ const TypingIndicator: React.FC<TypingIndicatorProps> = ({
   className = '',
 }) => {
   return (
-    <div className={`flex items-start space-x-2 ${className}`}>
+    <div className={`flex items-start space-x-2 animate-fade-in ${className}`}>
       <UserAvatar user={user} size="sm" />
-      <div className="bg-gray-100 dark:bg-gray-700 p-3 rounded-lg inline-flex space-x-1 items-center">
+      <div className="glass-effect-strong backdrop-blur-md p-3 rounded-tl-2xl rounded-tr-2xl rounded-br-2xl rounded-bl-sm inline-flex space-x-1 items-center shadow-sm">
         <div className="typing-indicator">
           <span></span>
           <span></span>
           <span></span>
         </div>
-        <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">typing...</span>
+        <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">thinking...</span>
       </div>
       
       {/* CSS for the typing animation */}
@@ -72,6 +72,15 @@ const TypingIndicator: React.FC<TypingIndicatorProps> = ({
         
         .dark .typing-indicator span {
           background-color: #aaa;
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fade-in {
+          animation: fadeIn 0.3s ease-out forwards;
         }
       `}</style>
     </div>

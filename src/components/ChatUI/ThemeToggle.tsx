@@ -44,22 +44,22 @@ const ThemeToggle: React.FC<ThemeToggleProps> = ({ className = '' }) => {
         Theme
       </span>
       <div className="flex items-center space-x-2">
-        <SunIcon className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+        <SunIcon className="h-4 w-4 text-yellow-500 dark:text-yellow-400" />
         <Switch
           checked={isDarkMode}
           onChange={toggleTheme}
           className={`${
-            isDarkMode ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-600'
-          } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2`}
+            isDarkMode ? 'bg-gradient-to-r from-blue-600 to-purple-600' : 'bg-gray-200/70 dark:bg-gray-600/50'
+          } relative inline-flex h-6 w-11 items-center rounded-full glass-effect transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:ring-offset-2`}
         >
           <span className="sr-only">Toggle dark mode</span>
           <span
             className={`${
               isDarkMode ? 'translate-x-6' : 'translate-x-1'
-            } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+            } inline-block h-4 w-4 transform rounded-full bg-white shadow-md transition-transform`}
           />
         </Switch>
-        <MoonIcon className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+        <MoonIcon className="h-4 w-4 text-gray-500 dark:text-blue-300" />
       </div>
     </div>
   );

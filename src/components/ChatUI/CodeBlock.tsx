@@ -48,9 +48,9 @@ const CodeBlock: React.FC<CodeBlockProps> = ({
   const codeLines = code.split('\n');
   
   return (
-    <div className={`relative rounded-lg overflow-hidden ${className}`}>
+    <div className={`relative rounded-xl overflow-hidden glass-effect backdrop-blur-md ${className}`}>
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-2 bg-gray-800 text-gray-200">
+      <div className="flex items-center justify-between px-4 py-2 bg-gray-800/90 text-gray-200 border-b border-white/10">
         <span className="text-sm font-mono">{formatLanguage(language)}</span>
         <button 
           onClick={copyToClipboard}
@@ -66,7 +66,7 @@ const CodeBlock: React.FC<CodeBlockProps> = ({
       </div>
       
       {/* Code container */}
-      <div className="relative overflow-x-auto bg-gray-900 p-4">
+      <div className="relative overflow-x-auto bg-gray-900/90 p-4">
         <pre className="text-sm font-mono language-highlight">
           <code className={`language-${language}`}>
             {showLineNumbers ? (
@@ -74,10 +74,10 @@ const CodeBlock: React.FC<CodeBlockProps> = ({
                 <tbody>
                   {codeLines.map((line, i) => (
                     <tr key={i} className="leading-relaxed">
-                      <td className="text-right pr-4 select-none text-gray-500 w-12">
+                      <td className="text-right pr-4 select-none text-gray-500 w-12 border-r border-gray-700/50">
                         {i + 1}
                       </td>
-                      <td className="text-gray-200 whitespace-pre">
+                      <td className="text-gray-200 whitespace-pre pl-4">
                         {line || ' '}
                       </td>
                     </tr>

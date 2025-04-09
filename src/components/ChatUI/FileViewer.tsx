@@ -83,7 +83,7 @@ const FileViewer: React.FC<FileViewerProps> = ({ file, onClose, className = '' }
               <img 
                 src={file.url} 
                 alt={file.name} 
-                className="max-w-full max-h-96 object-contain rounded" 
+                className="max-w-full max-h-96 object-contain rounded-lg" 
               />
             )}
           </div>
@@ -91,16 +91,16 @@ const FileViewer: React.FC<FileViewerProps> = ({ file, onClose, className = '' }
         
       case 'pdf':
         return (
-          <div className="mt-4 bg-gray-100 dark:bg-gray-700 rounded p-4 flex flex-col items-center">
+          <div className="mt-4 glass-effect rounded-xl p-4 flex flex-col items-center">
             <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">PDF Preview</p>
             {file.url ? (
               <iframe 
                 src={`${file.url}#toolbar=0`} 
-                className="w-full h-96 border-0 rounded"
+                className="w-full h-96 border-0 rounded-lg"
                 title={file.name}
               />
             ) : (
-              <div className="flex items-center justify-center h-40 w-full border-2 border-dashed border-gray-300 dark:border-gray-600 rounded">
+              <div className="flex items-center justify-center h-40 w-full border-2 border-dashed border-white/30 dark:border-gray-600/50 rounded-lg">
                 <p className="text-gray-500 dark:text-gray-400">Preview not available</p>
               </div>
             )}
@@ -121,17 +121,18 @@ const FileViewer: React.FC<FileViewerProps> = ({ file, onClose, className = '' }
         return (
           <div className="mt-4 overflow-x-auto">
             <div className="inline-block min-w-full">
-              <div className="border border-gray-200 dark:border-gray-700 rounded-lg">
-                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                  <thead className="bg-gray-50 dark:bg-gray-800">
+              <div className="glass-effect border border-white/30 dark:border-gray-700/30 rounded-xl">
+                <table className="min-w-full divide-y divide-white/20 dark:divide-gray-700/30">
+                  <thead className="bg-white/10 dark:bg-gray-800/30">
                     <tr>
                       <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Preview Only</th>
                       <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Column A</th>
                       <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Column B</th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+                  <tbody className="divide-y divide-white/20 dark:divide-gray-700/30">
                     <tr>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">Row 1</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">Data 1-A</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">Data 1-B</td>
                     </tr>
@@ -152,12 +153,12 @@ const FileViewer: React.FC<FileViewerProps> = ({ file, onClose, className = '' }
         return (
           <div className="mt-4">
             {file.url ? (
-              <audio controls className="w-full">
+              <audio controls className="w-full rounded-lg glass-effect p-2">
                 <source src={file.url} type="audio/mpeg" />
                 Your browser does not support the audio element.
               </audio>
             ) : (
-              <div className="flex items-center justify-center h-16 w-full border-2 border-dashed border-gray-300 dark:border-gray-600 rounded">
+              <div className="flex items-center justify-center h-16 w-full border-2 border-dashed border-white/30 dark:border-gray-600/50 rounded-lg glass-effect">
                 <p className="text-gray-500 dark:text-gray-400">Audio preview not available</p>
               </div>
             )}
@@ -168,12 +169,12 @@ const FileViewer: React.FC<FileViewerProps> = ({ file, onClose, className = '' }
         return (
           <div className="mt-4">
             {file.url ? (
-              <video controls className="w-full max-h-96 rounded">
+              <video controls className="w-full max-h-96 rounded-lg glass-effect">
                 <source src={file.url} type="video/mp4" />
                 Your browser does not support the video element.
               </video>
             ) : (
-              <div className="flex items-center justify-center h-40 w-full border-2 border-dashed border-gray-300 dark:border-gray-600 rounded">
+              <div className="flex items-center justify-center h-40 w-full border-2 border-dashed border-white/30 dark:border-gray-600/50 rounded-lg glass-effect">
                 <p className="text-gray-500 dark:text-gray-400">Video preview not available</p>
               </div>
             )}
@@ -182,7 +183,7 @@ const FileViewer: React.FC<FileViewerProps> = ({ file, onClose, className = '' }
         
       default:
         return (
-          <div className="mt-4 p-4 bg-gray-100 dark:bg-gray-700 rounded">
+          <div className="mt-4 p-4 glass-effect rounded-xl">
             <p className="text-sm text-gray-500 dark:text-gray-400">Preview not available for this file type</p>
           </div>
         );
@@ -190,12 +191,12 @@ const FileViewer: React.FC<FileViewerProps> = ({ file, onClose, className = '' }
   };
 
   return (
-    <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden ${className}`}>
-      <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+    <div className={`glass-effect rounded-2xl backdrop-blur-md overflow-hidden ${className}`}>
+      <div className="p-4 border-b border-white/20 dark:border-gray-700/30 flex justify-between items-center">
         <div className="flex items-center space-x-3">
           {getFileIcon(file.type)}
           <div>
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white truncate max-w-xs">{file.name}</h3>
+            <h3 className="text-lg font-medium bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent truncate max-w-xs">{file.name}</h3>
             <p className="text-sm text-gray-500 dark:text-gray-400">{formatFileSize(file.size)}</p>
           </div>
         </div>
@@ -203,7 +204,7 @@ const FileViewer: React.FC<FileViewerProps> = ({ file, onClose, className = '' }
         <div className="flex space-x-2">
           <button 
             onClick={() => setIsExpanded(!isExpanded)}
-            className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
+            className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 rounded-full hover:bg-white/20 dark:hover:bg-gray-800/30 glass-effect"
           >
             {isExpanded ? (
               <ChevronUpIcon className="h-5 w-5" />
@@ -216,7 +217,7 @@ const FileViewer: React.FC<FileViewerProps> = ({ file, onClose, className = '' }
             <a 
               href={file.url}
               download={file.name}
-              className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
+              className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 rounded-full hover:bg-white/20 dark:hover:bg-gray-800/30 glass-effect"
             >
               <ArrowDownTrayIcon className="h-5 w-5" />
             </a>
@@ -225,7 +226,7 @@ const FileViewer: React.FC<FileViewerProps> = ({ file, onClose, className = '' }
           {onClose && (
             <button 
               onClick={onClose}
-              className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
+              className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 rounded-full hover:bg-white/20 dark:hover:bg-gray-800/30 glass-effect"
             >
               <XMarkIcon className="h-5 w-5" />
             </button>
@@ -236,13 +237,13 @@ const FileViewer: React.FC<FileViewerProps> = ({ file, onClose, className = '' }
       {isExpanded && (
         <div className="p-4">
           <Tab.Group>
-            <Tab.List className="flex space-x-1 rounded-lg bg-gray-100 dark:bg-gray-700 p-1">
+            <Tab.List className="flex space-x-1 rounded-xl glass-effect p-1">
               <Tab
                 className={({ selected }) =>
-                  `w-full py-2 text-sm font-medium leading-5 rounded-md
+                  `w-full py-2 text-sm font-medium leading-5 rounded-lg transition-all duration-200
                   ${selected 
-                    ? 'bg-white dark:bg-gray-800 shadow text-blue-600 dark:text-blue-400' 
-                    : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
+                    ? 'bg-white/70 dark:bg-gray-800/70 shadow-md text-blue-600 dark:text-blue-400' 
+                    : 'text-gray-600 dark:text-gray-300 hover:bg-white/30 dark:hover:bg-gray-700/30'
                   }`
                 }
               >
@@ -250,10 +251,10 @@ const FileViewer: React.FC<FileViewerProps> = ({ file, onClose, className = '' }
               </Tab>
               <Tab
                 className={({ selected }) =>
-                  `w-full py-2 text-sm font-medium leading-5 rounded-md
+                  `w-full py-2 text-sm font-medium leading-5 rounded-lg transition-all duration-200
                   ${selected 
-                    ? 'bg-white dark:bg-gray-800 shadow text-blue-600 dark:text-blue-400' 
-                    : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
+                    ? 'bg-white/70 dark:bg-gray-800/70 shadow-md text-blue-600 dark:text-blue-400' 
+                    : 'text-gray-600 dark:text-gray-300 hover:bg-white/30 dark:hover:bg-gray-700/30'
                   }`
                 }
               >
@@ -264,7 +265,7 @@ const FileViewer: React.FC<FileViewerProps> = ({ file, onClose, className = '' }
               <Tab.Panel className="focus:outline-none">
                 {renderPreview()}
               </Tab.Panel>
-              <Tab.Panel className="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg focus:outline-none">
+              <Tab.Panel className="p-3 glass-effect rounded-xl focus:outline-none">
                 <div className="space-y-3">
                   <div>
                     <p className="text-sm font-medium text-gray-500 dark:text-gray-400">File Name</p>

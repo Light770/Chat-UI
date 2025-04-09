@@ -72,17 +72,17 @@ const UserAvatar: React.FC<UserAvatarProps> = ({
     }
   };
 
-  // Random background color based on user name
+  // Random background color based on user name - now using gradients
   const getBackgroundColor = () => {
-    const colors = [
-      'bg-blue-500',
-      'bg-purple-500',
-      'bg-green-500',
-      'bg-yellow-500',
-      'bg-red-500',
-      'bg-pink-500',
-      'bg-indigo-500',
-      'bg-teal-500',
+    const gradients = [
+      'bg-gradient-to-br from-blue-500 to-purple-600',
+      'bg-gradient-to-br from-purple-500 to-pink-600',
+      'bg-gradient-to-br from-green-500 to-teal-600',
+      'bg-gradient-to-br from-yellow-500 to-orange-600',
+      'bg-gradient-to-br from-red-500 to-pink-600',
+      'bg-gradient-to-br from-indigo-500 to-blue-600',
+      'bg-gradient-to-br from-pink-500 to-rose-600',
+      'bg-gradient-to-br from-teal-500 to-cyan-600',
     ];
     
     // Simple hash function to consistently assign colors based on name
@@ -90,7 +90,7 @@ const UserAvatar: React.FC<UserAvatarProps> = ({
       return char.charCodeAt(0) + ((acc << 5) - acc);
     }, 0);
     
-    return colors[Math.abs(hash) % colors.length];
+    return gradients[Math.abs(hash) % gradients.length];
   };
 
   return (
@@ -99,10 +99,10 @@ const UserAvatar: React.FC<UserAvatarProps> = ({
         <img
           src={user.avatarUrl}
           alt={`${user.name}'s avatar`}
-          className={`${getAvatarSize()} rounded-full object-cover`}
+          className={`${getAvatarSize()} rounded-full object-cover shadow-md border border-white/30 dark:border-gray-700/30`}
         />
       ) : (
-        <div className={`${getAvatarSize()} ${getBackgroundColor()} rounded-full flex items-center justify-center text-white font-medium`}>
+        <div className={`${getAvatarSize()} ${getBackgroundColor()} rounded-full flex items-center justify-center text-white font-medium shadow-md`}>
           {getInitials(user.name)}
         </div>
       )}

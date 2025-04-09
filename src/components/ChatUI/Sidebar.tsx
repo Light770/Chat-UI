@@ -41,7 +41,6 @@ interface SidebarProps {
   onNewConversation: () => void;
   onDeleteConversation?: (id: string) => void;
   onSignOut?: () => void;
-  collapsible?: boolean;
   className?: string;
 }
 
@@ -54,106 +53,74 @@ const Sidebar: React.FC<SidebarProps> = ({
   onNewConversation,
   onDeleteConversation,
   onSignOut,
-  collapsible = true,
   className = '',
 }) => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
   const filteredConversations = conversations.filter(
     conv => conv.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const toggleSidebar = () => {
-    if (collapsible) {
-      setIsCollapsed(!isCollapsed);
-    }
-  };
-
   return (
     <div 
       className={`
-        relative flex flex-col h-full transition-all duration-300 ease-in-out
-        ${isCollapsed ? 'w-16' : 'w-64 sm:w-72'}
-        bg-gray-50 dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700
+        flex flex-col h-full overflow-hidden
         ${className}
       `}
     >
-      {collapsible && (
-        <button
-          onClick={toggleSidebar}
-          className="absolute -right-3 top-16 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full p-1 shadow-md z-10"
-        >
-          {isCollapsed ? (
-            <Bars3Icon className="h-4 w-4 text-gray-500 dark:text-gray-400" />
-          ) : (
-            <XMarkIcon className="h-4 w-4 text-gray-500 dark:text-gray-400" />
-          )}
-        </button>
-      )}
-
-      <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-        {!isCollapsed && (
-          <h2 className="text-lg font-semibold text-gray-800 dark:text-white">Conversations</h2>
-        )}
+      <div className="flex items-center justify-between p-4 border-b border-white/20 dark:border-gray-700/30 glass-effect-strong">
+        <h2 className="text-lg font-semibold gradient-text">Conversations</h2>
         
         <button
           onClick={onNewConversation}
-          className={`
-            p-2 rounded-md bg-blue-500 text-white hover:bg-blue-600 flex items-center justify-center
-            ${isCollapsed ? 'w-10 h-10' : 'w-auto space-x-1'}
-          `}
+          className="p-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:shadow-lg transition-all duration-300 flex items-center space-x-1"
         >
           <PlusCircleIcon className="h-5 w-5" />
-          {!isCollapsed && <span>New Chat</span>}
+          <span>New Chat</span>
         </button>
       </div>
 
-      {!isCollapsed && (
-        <div className="p-4">
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Search conversations..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full px-3 py-2 pl-10 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-            />
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <svg className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
-              </svg>
-            </div>
+      <div className="p-4 border-b border-white/20 dark:border-gray-700/30">
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="Search conversations..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full px-3 py-2 pl-10 rounded-full glass-effect-light backdrop-blur-sm border-0 focus:ring-2 focus:ring-blue-500/50 text-gray-900 dark:text-white shadow-sm"
+          />
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+            </svg>
           </div>
         </div>
-      )}
+      </div>
       
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto custom-scrollbar">
         {folders.length > 0 ? (
           <div className="space-y-1 p-2">
             {folders.map((folder) => (
               <Disclosure key={folder.id} defaultOpen={true}>
                 {({ open }) => (
                   <>
-                    <Disclosure.Button className="flex items-center justify-between w-full px-2 py-2 text-sm font-medium text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md">
+                    <Disclosure.Button className="flex items-center justify-between w-full px-2 py-2 text-sm font-medium text-left text-gray-700 dark:text-gray-300 hover:bg-white/20 dark:hover:bg-gray-800/30 rounded-lg">
                       <div className="flex items-center">
                         <FolderIcon className="h-5 w-5 mr-2 text-gray-500 dark:text-gray-400" />
-                        {!isCollapsed && <span>{folder.name}</span>}
+                        <span>{folder.name}</span>
                       </div>
-                      {!isCollapsed && (
-                        <svg
-                          className={`${open ? 'transform rotate-90' : ''} w-4 h-4 text-gray-500 dark:text-gray-400`}
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
-                      )}
+                      <svg
+                        className={`${open ? 'transform rotate-90' : ''} w-4 h-4 text-gray-500 dark:text-gray-400`}
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
                     </Disclosure.Button>
                     
                     <Transition
-                      show={open && !isCollapsed}
+                      show={open}
                       enter="transition duration-100 ease-out"
                       enterFrom="transform scale-95 opacity-0"
                       enterTo="transform scale-100 opacity-100"
@@ -167,11 +134,10 @@ const Sidebar: React.FC<SidebarProps> = ({
                             key={conversation.id}
                             onClick={() => onSelectConversation(conversation.id)}
                             className={`
-                              w-full flex items-center px-2 py-2 text-sm rounded-md
+                              w-full flex items-center px-2 py-2 text-sm rounded-lg
                               ${selectedConversationId === conversation.id 
-                                ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300' 
-                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
-                              }
+                                ? 'sidebar-item-active glass-effect-light text-blue-700 dark:text-blue-300' 
+                                : 'sidebar-item text-gray-700 dark:text-gray-300'}
                             `}
                           >
                             <ChatBubbleLeftRightIcon className="h-5 w-5 mr-2 flex-shrink-0" />
@@ -192,39 +158,35 @@ const Sidebar: React.FC<SidebarProps> = ({
                 <button
                   onClick={() => onSelectConversation(conversation.id)}
                   className={`
-                    w-full flex items-center px-3 py-2 text-sm rounded-md
+                    w-full flex items-center px-3 py-3 text-sm rounded-xl transition-all duration-200
                     ${selectedConversationId === conversation.id 
-                      ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300' 
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
-                    }
-                    ${isCollapsed ? 'justify-center' : 'justify-start'}
+                      ? 'sidebar-item-active glass-effect-strong backdrop-blur-md text-blue-700 dark:text-blue-300' 
+                      : 'sidebar-item text-gray-700 dark:text-gray-300'}
                   `}
                 >
-                  <ChatBubbleLeftRightIcon className={`h-5 w-5 ${isCollapsed ? '' : 'mr-3 flex-shrink-0'}`} />
+                  <ChatBubbleLeftRightIcon className="h-5 w-5 mr-3 flex-shrink-0" />
                   
-                  {!isCollapsed && (
-                    <div className="flex flex-col items-start">
-                      <div className="font-medium truncate w-full">
-                        {conversation.title}
-                      </div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400 truncate w-full">
-                        {conversation.preview}
-                      </div>
-                      <div className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                        {conversation.timestamp.toLocaleDateString()}
-                      </div>
+                  <div className="flex flex-col items-start">
+                    <div className="font-medium truncate w-full">
+                      {conversation.title}
                     </div>
-                  )}
+                    <div className="text-xs text-gray-500 dark:text-gray-400 truncate w-full">
+                      {conversation.preview}
+                    </div>
+                    <div className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                      {conversation.timestamp.toLocaleDateString()}
+                    </div>
+                  </div>
                   
-                  {conversation.unread && !isCollapsed && (
+                  {conversation.unread && (
                     <span className="ml-auto h-2 w-2 rounded-full bg-blue-500"></span>
                   )}
                 </button>
                 
-                {onDeleteConversation && !isCollapsed && (
+                {onDeleteConversation && (
                   <button
                     onClick={() => onDeleteConversation(conversation.id)}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-full text-gray-400 hover:text-red-500 hover:bg-gray-100 dark:hover:bg-gray-800 opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-full text-gray-400 hover:text-red-500 hover:bg-white/30 dark:hover:bg-gray-800/50 opacity-0 group-hover:opacity-100 transition-opacity glass-effect"
                   >
                     <TrashIcon className="h-4 w-4" />
                   </button>
@@ -235,26 +197,24 @@ const Sidebar: React.FC<SidebarProps> = ({
         )}
       </div>
       
-      <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-        {!isCollapsed && <ThemeToggle />}
+      <div className="p-4 border-t border-white/20 dark:border-gray-700/30 glass-effect-strong backdrop-blur-md">
+        <ThemeToggle />
         
         {user && (
           <div className="mt-4 flex items-center space-x-3">
             <UserAvatar user={user} />
             
-            {!isCollapsed && (
-              <div className="flex-1">
-                <p className="text-sm font-medium text-gray-900 dark:text-white">{user.name}</p>
-                {user.email && (
-                  <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user.email}</p>
-                )}
-              </div>
-            )}
+            <div className="flex-1">
+              <p className="text-sm font-medium text-gray-900 dark:text-white">{user.name}</p>
+              {user.email && (
+                <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user.email}</p>
+              )}
+            </div>
             
             {onSignOut && (
               <button
                 onClick={onSignOut}
-                className="p-2 rounded-full text-gray-400 hover:text-red-500 hover:bg-gray-100 dark:hover:bg-gray-800"
+                className="p-2 rounded-full text-gray-400 hover:text-red-500 hover:bg-white/30 dark:hover:bg-gray-800/50 glass-effect"
               >
                 <ArrowLeftOnRectangleIcon className="h-5 w-5" />
               </button>

@@ -16,15 +16,15 @@ export interface AIFeature {
   id: string;
   name: string;
   description: string;
-  icon: React.ReactNode;
-  enabled: boolean;
+  icon?: React.ReactNode;
+  enabled?: boolean;
 }
 
 export interface AIModelOption {
   id: string;
   name: string;
   description: string;
-  isAvailable: boolean;
+  isAvailable?: boolean;
 }
 
 interface AIFeaturesPanelProps {
@@ -91,7 +91,12 @@ const AIFeaturesPanel: React.FC<AIFeaturesPanelProps> = ({
     },
   ];
 
-  const featuresToRender = features.length > 0 ? features : defaultFeatures;
+  const featuresToRender = features.length > 0 ? features.map(f => ({
+    ...f,
+    icon: f.icon || defaultFeatures.find(df => df.id === f.id)?.icon || <SparklesIcon className="h-6 w-6" />,
+    enabled: f.enabled !== undefined ? f.enabled : defaultFeatures.find(df => df.id === f.id)?.enabled || false
+  })) : defaultFeatures;
+  
   const featuresToShow = showAdvanced ? featuresToRender : featuresToRender.slice(0, 3);
 
   const defaultModels: AIModelOption[] = [
@@ -115,12 +120,15 @@ const AIFeaturesPanel: React.FC<AIFeaturesPanelProps> = ({
     },
   ];
 
-  const modelsToRender = models.length > 0 ? models : defaultModels;
+  const modelsToRender = models.length > 0 ? models.map(m => ({
+    ...m,
+    isAvailable: m.isAvailable !== undefined ? m.isAvailable : true
+  })) : defaultModels;
 
   return (
-    <div className={`bg-white dark:bg-gray-800 shadow rounded-lg ${className}`}>
+    <div className={`glass-effect rounded-2xl ${className}`}>
       <div className="px-4 py-5 sm:p-6">
-        <h3 className="text-lg font-medium leading-6 text-gray-900 dark:text-white flex items-center">
+        <h3 className="text-lg font-medium leading-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent flex items-center">
           <SparklesIcon className="h-5 w-5 mr-2 text-blue-500" />
           AI Features
         </h3>
@@ -134,10 +142,10 @@ const AIFeaturesPanel: React.FC<AIFeaturesPanelProps> = ({
                   key={model.id}
                   onClick={() => model.isAvailable && onSelectModel(model.id)}
                   className={`
-                    relative rounded-lg border p-4 cursor-pointer flex focus:outline-none
+                    relative rounded-xl border p-4 cursor-pointer flex focus:outline-none glass-effect
                     ${selectedModel === model.id
-                      ? 'bg-blue-50 border-blue-500 dark:bg-blue-900 dark:border-blue-400'
-                      : 'border-gray-300 dark:border-gray-600'
+                      ? 'bg-blue-50/30 border-blue-500/50 dark:bg-blue-900/30 dark:border-blue-400/50 shadow-md'
+                      : 'border-white/30 dark:border-gray-600/50'
                     }
                     ${!model.isAvailable && 'opacity-50 cursor-not-allowed'}
                   `}
@@ -150,7 +158,7 @@ const AIFeaturesPanel: React.FC<AIFeaturesPanelProps> = ({
                       {model.description}
                     </span>
                     {!model.isAvailable && (
-                      <span className="mt-1 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+                      <span className="mt-1 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100/50 text-gray-800 dark:bg-gray-700/50 dark:text-gray-300">
                         Unavailable
                       </span>
                     )}
@@ -160,14 +168,14 @@ const AIFeaturesPanel: React.FC<AIFeaturesPanelProps> = ({
             </div>
           </div>
           
-          <div className="border-t border-gray-200 dark:border-gray-700 pt-5">
+          <div className="border-t border-white/20 dark:border-gray-700/30 pt-5">
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
               Active Features
             </label>
             
             <div className="mt-2 space-y-4">
               {featuresToShow.map((feature) => (
-                <div key={feature.id} className="flex items-center justify-between">
+                <div key={feature.id} className="flex items-center justify-between glass-effect p-3 rounded-xl">
                   <div className="flex items-center">
                     <div className="mr-3 flex-shrink-0 text-blue-500 dark:text-blue-400">
                       {feature.icon}
@@ -178,16 +186,16 @@ const AIFeaturesPanel: React.FC<AIFeaturesPanelProps> = ({
                     </div>
                   </div>
                   <Switch
-                    checked={feature.enabled}
+                    checked={feature.enabled || false}
                     onChange={(enabled) => onToggleFeature(feature.id, enabled)}
                     className={`${
-                      feature.enabled ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-600'
-                    } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2`}
+                      feature.enabled ? 'bg-gradient-to-r from-blue-500 to-purple-600' : 'bg-gray-200/70 dark:bg-gray-600/50'
+                    } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:ring-offset-2`}
                   >
                     <span
                       className={`${
                         feature.enabled ? 'translate-x-6' : 'translate-x-1'
-                      } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+                      } inline-block h-4 w-4 transform rounded-full bg-white shadow-md transition-transform`}
                     />
                   </Switch>
                 </div>
@@ -206,8 +214,8 @@ const AIFeaturesPanel: React.FC<AIFeaturesPanelProps> = ({
             </button>
           </div>
           
-          <div className="border-t border-gray-200 dark:border-gray-700 pt-5">
-            <div className="rounded-md bg-blue-50 dark:bg-blue-900 p-4">
+          <div className="border-t border-white/20 dark:border-gray-700/30 pt-5">
+            <div className="glass-effect bg-blue-50/20 dark:bg-blue-900/20 p-4 rounded-xl">
               <div className="flex">
                 <div className="flex-shrink-0">
                   <BoltIcon className="h-5 w-5 text-blue-500 dark:text-blue-400" />

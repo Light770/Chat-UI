@@ -72,24 +72,52 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-gradient-to-br from-pink-50 to-blue-50 dark:from-gray-900 dark:to-blue-950 text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+    min-height: 100vh;
+    min-width: 100vw;
+    overflow: hidden;
   }
 }
 
 /* Chat UI Custom Components */
 @layer components {
+  /* Glass effect base - enhanced */
+  .glass-effect {
+    @apply backdrop-blur-md bg-white/40 dark:bg-gray-800/40 border border-white/20 dark:border-gray-700/20;
+  }
+  
+  .glass-effect-strong {
+    @apply backdrop-blur-lg bg-white/60 dark:bg-gray-800/60 border border-white/30 dark:border-gray-700/30;
+  }
+  
+  .glass-effect-light {
+    @apply backdrop-blur-sm bg-white/20 dark:bg-gray-800/20 border border-white/10 dark:border-gray-700/10;
+  }
+  
+  .glass-effect-colored {
+    @apply backdrop-blur-md bg-gradient-to-br from-white/40 to-blue-100/30 dark:from-gray-800/40 dark:to-blue-900/20 border border-white/20 dark:border-gray-700/20;
+  }
+  
+  .glass-effect-pink {
+    @apply backdrop-blur-md bg-gradient-to-br from-white/40 to-pink-100/30 dark:from-gray-800/40 dark:to-pink-900/20 border border-white/20 dark:border-gray-700/20;
+  }
+  
+  .neumorphic {
+    @apply shadow-[5px_5px_10px_rgba(0,0,0,0.05),_-5px_-5px_10px_rgba(255,255,255,0.8)] dark:shadow-[5px_5px_10px_rgba(0,0,0,0.2),_-5px_-5px_10px_rgba(255,255,255,0.05)];
+  }
+
   /* Message Bubbles */
   .message-bubble-user {
-    @apply bg-blue-500 text-white rounded-tr-lg rounded-tl-lg rounded-bl-lg rounded-br-sm px-4 py-2 max-w-[80%] shadow-sm;
+    @apply bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-tr-2xl rounded-tl-2xl rounded-bl-2xl rounded-br-sm px-4 py-2 max-w-[80%] shadow-sm;
   }
   
   .message-bubble-ai {
-    @apply bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-tl-lg rounded-tr-lg rounded-br-lg rounded-bl-sm px-4 py-2 max-w-[80%] shadow-sm;
+    @apply glass-effect-strong text-gray-900 dark:text-white rounded-tl-2xl rounded-tr-2xl rounded-br-2xl rounded-bl-sm px-4 py-2 max-w-[80%] shadow-sm;
   }
   
   .message-bubble-system {
-    @apply bg-yellow-50 dark:bg-yellow-900/20 text-gray-900 dark:text-yellow-100 rounded-lg border border-yellow-200 dark:border-yellow-800 px-4 py-2 max-w-[90%] text-sm;
+    @apply glass-effect glass-effect-pink rounded-2xl px-4 py-2 max-w-[90%] text-sm;
   }
 
   /* Custom Scrollbar */
@@ -103,11 +131,11 @@
   }
   
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    @apply bg-gray-300 dark:bg-gray-600 rounded-full;
+    @apply bg-gray-300/50 dark:bg-gray-600/50 rounded-full;
   }
   
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    @apply bg-gray-400 dark:bg-gray-500;
+    @apply bg-gray-400/70 dark:bg-gray-500/70;
   }
   
   /* Typing Indicator Animation */
@@ -117,11 +145,11 @@
   
   /* File Upload Zone */
   .upload-zone {
-    @apply border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 transition-all duration-200;
+    @apply border-2 border-dashed border-gray-300/70 dark:border-gray-600/70 rounded-lg p-6 transition-all duration-200 glass-effect-light;
   }
   
   .upload-zone-active {
-    @apply border-blue-500 bg-blue-50 dark:bg-blue-900/20;
+    @apply border-blue-500/70 bg-blue-50/50 dark:bg-blue-900/20;
   }
   
   /* Graph Visualization */
@@ -139,11 +167,44 @@
   }
   
   .code-block-header {
-    @apply bg-gray-800 text-gray-200 px-4 py-2 flex items-center justify-between;
+    @apply bg-gray-800/90 text-gray-200 px-4 py-2 flex items-center justify-between;
   }
   
   .code-block-content {
-    @apply bg-gray-900 p-4 overflow-x-auto;
+    @apply bg-gray-900/90 p-4 overflow-x-auto;
+  }
+  
+  /* Modern card styles */
+  .modern-card {
+    @apply glass-effect rounded-2xl shadow-lg;
+  }
+  
+  /* Button styles */
+  .modern-button {
+    @apply rounded-full px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md hover:shadow-lg transition-all duration-300;
+  }
+  
+  .modern-button-secondary {
+    @apply rounded-full px-4 py-2 glass-effect shadow-sm hover:shadow-md transition-all duration-300;
+  }
+  
+  /* Sidebar styles */
+  .sidebar-item {
+    @apply transition-all duration-200 hover:bg-white/30 dark:hover:bg-gray-700/50 rounded-xl;
+  }
+  
+  .sidebar-item-active {
+    @apply bg-white/50 dark:bg-gray-700/50 shadow-sm;
+  }
+  
+  /* Gradient text */
+  .gradient-text {
+    @apply bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent;
+  }
+  
+  /* Panels */
+  .panel-container {
+    @apply glass-effect rounded-xl p-4;
   }
 }
 

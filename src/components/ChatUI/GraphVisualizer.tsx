@@ -31,14 +31,123 @@ const GraphVisualizer: React.FC<GraphVisualizerProps> = ({
       .attr('height', height)
       .attr('viewBox', [0, 0, width, height]);
 
-    // Define node colors based on type
-    const nodeColors: Record<string, string> = {
-      'document': '#4f46e5', // Indigo
-      'chunk': '#10b981',    // Emerald
-      'query': '#f59e0b',    // Amber
-      'answer': '#ef4444',   // Red
-      'default': '#6b7280',  // Gray
+    // Add a glass-like background with rounded corners
+    svg.append('rect')
+      .attr('width', width)
+      .attr('height', height)
+      .attr('rx', 12) // Rounded corners
+      .attr('fill', 'rgba(255, 255, 255, 0.08)')
+      .attr('stroke', 'rgba(255, 255, 255, 0.2)')
+      .attr('stroke-width', 1);
+
+    // Define gradient colors for nodes based on type
+    const defs = svg.append('defs');
+
+    // Create gradients for each node type
+    const nodeGradients: Record<string, string> = {
+      'document': 'url(#gradientDocument)',
+      'chunk': 'url(#gradientChunk)',
+      'query': 'url(#gradientQuery)',
+      'answer': 'url(#gradientAnswer)',
+      'default': 'url(#gradientDefault)',
     };
+
+    // Create document gradient (blue to purple)
+    const gradientDocument = defs.append('linearGradient')
+      .attr('id', 'gradientDocument')
+      .attr('x1', '0%')
+      .attr('y1', '0%')
+      .attr('x2', '100%')
+      .attr('y2', '100%');
+    
+    gradientDocument.append('stop')
+      .attr('offset', '0%')
+      .attr('stop-color', '#4f46e5');
+    
+    gradientDocument.append('stop')
+      .attr('offset', '100%')
+      .attr('stop-color', '#8b5cf6');
+
+    // Create chunk gradient (green to teal)
+    const gradientChunk = defs.append('linearGradient')
+      .attr('id', 'gradientChunk')
+      .attr('x1', '0%')
+      .attr('y1', '0%')
+      .attr('x2', '100%')
+      .attr('y2', '100%');
+    
+    gradientChunk.append('stop')
+      .attr('offset', '0%')
+      .attr('stop-color', '#10b981');
+    
+    gradientChunk.append('stop')
+      .attr('offset', '100%')
+      .attr('stop-color', '#0ea5e9');
+
+    // Create query gradient (amber to orange)
+    const gradientQuery = defs.append('linearGradient')
+      .attr('id', 'gradientQuery')
+      .attr('x1', '0%')
+      .attr('y1', '0%')
+      .attr('x2', '100%')
+      .attr('y2', '100%');
+    
+    gradientQuery.append('stop')
+      .attr('offset', '0%')
+      .attr('stop-color', '#f59e0b');
+    
+    gradientQuery.append('stop')
+      .attr('offset', '100%')
+      .attr('stop-color', '#f97316');
+
+    // Create answer gradient (red to pink)
+    const gradientAnswer = defs.append('linearGradient')
+      .attr('id', 'gradientAnswer')
+      .attr('x1', '0%')
+      .attr('y1', '0%')
+      .attr('x2', '100%')
+      .attr('y2', '100%');
+    
+    gradientAnswer.append('stop')
+      .attr('offset', '0%')
+      .attr('stop-color', '#ef4444');
+    
+    gradientAnswer.append('stop')
+      .attr('offset', '100%')
+      .attr('stop-color', '#ec4899');
+
+    // Create default gradient (gray)
+    const gradientDefault = defs.append('linearGradient')
+      .attr('id', 'gradientDefault')
+      .attr('x1', '0%')
+      .attr('y1', '0%')
+      .attr('x2', '100%')
+      .attr('y2', '100%');
+    
+    gradientDefault.append('stop')
+      .attr('offset', '0%')
+      .attr('stop-color', '#6b7280');
+    
+    gradientDefault.append('stop')
+      .attr('offset', '100%')
+      .attr('stop-color', '#4b5563');
+
+    // Add a subtle glow filter
+    const filter = defs.append('filter')
+      .attr('id', 'glow')
+      .attr('x', '-50%')
+      .attr('y', '-50%')
+      .attr('width', '200%')
+      .attr('height', '200%');
+    
+    filter.append('feGaussianBlur')
+      .attr('stdDeviation', '3')
+      .attr('result', 'blur');
+    
+    filter.append('feComposite')
+      .attr('in', 'SourceGraphic')
+      .attr('in2', 'blur')
+      .attr('operator', 'over');
 
     // Create simulation
     const simulation = d3.forceSimulation(data.nodes as d3.SimulationNodeDatum[])
@@ -47,14 +156,15 @@ const GraphVisualizer: React.FC<GraphVisualizerProps> = ({
       .force('center', d3.forceCenter(width / 2, height / 2))
       .force('collide', d3.forceCollide().radius(30));
 
-    // Create links
+    // Create links with gradient and translucent effect
     const link = svg.append('g')
-      .attr('stroke', '#999')
-      .attr('stroke-opacity', 0.6)
       .selectAll('line')
       .data(data.links)
       .join('line')
-      .attr('stroke-width', (d: Link) => Math.sqrt(d.value || 1));
+      .attr('stroke', 'rgba(150, 150, 150, 0.3)')
+      .attr('stroke-opacity', 0.6)
+      .attr('stroke-width', (d: Link) => Math.sqrt(d.value || 1))
+      .attr('stroke-dasharray', (d: Link) => d.type === 'dashed' ? '5,5' : 'none');
 
     // Create link labels if they have labels
     const linkLabel = svg.append('g')
@@ -64,8 +174,9 @@ const GraphVisualizer: React.FC<GraphVisualizerProps> = ({
       .join('text')
       .attr('text-anchor', 'middle')
       .attr('dy', -5)
-      .attr('fill', '#666')
+      .attr('fill', 'rgba(150, 150, 150, 0.9)')
       .attr('font-size', '8px')
+      .attr('filter', 'url(#glow)')
       .text((d: Link) => d.label || '');
 
     // Create node groups
@@ -78,12 +189,20 @@ const GraphVisualizer: React.FC<GraphVisualizerProps> = ({
         if (onNodeClick) onNodeClick(d);
       });
 
-    // Add circle to each node
+    // Add glass-like circle effect to each node
+    node.append('circle')
+      .attr('r', (d: Node) => (d.size || 15) + 3) // Larger background for glass effect
+      .attr('fill', 'rgba(255, 255, 255, 0.1)')
+      .attr('stroke', 'rgba(255, 255, 255, 0.3)')
+      .attr('stroke-width', 1);
+
+    // Add colored circle to each node
     node.append('circle')
       .attr('r', (d: Node) => d.size || 15)
-      .attr('fill', (d: Node) => nodeColors[d.type] || nodeColors.default)
+      .attr('fill', (d: Node) => nodeGradients[d.type] || nodeGradients.default)
       .attr('stroke', '#fff')
-      .attr('stroke-width', 1.5);
+      .attr('stroke-width', 1.5)
+      .attr('filter', 'url(#glow)');
 
     // Add text label to each node
     node.append('text')
@@ -95,7 +214,7 @@ const GraphVisualizer: React.FC<GraphVisualizerProps> = ({
 
     // Handle hover effects
     node.on('mouseover', function(event: any, d: Node) {
-      d3.select(this).select('circle')
+      d3.select(this).select('circle:nth-child(2)')
         .transition()
         .duration(300)
         .attr('r', (d: Node) => (d.size || 15) * 1.2);
@@ -103,7 +222,7 @@ const GraphVisualizer: React.FC<GraphVisualizerProps> = ({
       showTooltip(event, d);
     })
     .on('mouseout', function(event: any, d: Node) {
-      d3.select(this).select('circle')
+      d3.select(this).select('circle:nth-child(2)')
         .transition()
         .duration(300)
         .attr('r', (d: Node) => d.size || 15);
@@ -114,25 +233,26 @@ const GraphVisualizer: React.FC<GraphVisualizerProps> = ({
     // Create and configure tooltip
     const tooltip = d3.select('body')
       .append('div')
-      .attr('class', 'graph-tooltip')
+      .attr('class', 'graph-tooltip glass-effect')
       .style('position', 'absolute')
       .style('visibility', 'hidden')
-      .style('background-color', 'white')
-      .style('border', '1px solid #ddd')
+      .style('background-color', 'rgba(255, 255, 255, 0.8)')
+      .style('backdrop-filter', 'blur(8px)')
+      .style('border', '1px solid rgba(255, 255, 255, 0.3)')
       .style('padding', '10px')
-      .style('border-radius', '6px')
+      .style('border-radius', '8px')
       .style('pointer-events', 'none')
       .style('font-size', '12px')
-      .style('box-shadow', '0 4px 6px rgba(0, 0, 0, 0.1)');
+      .style('box-shadow', '0 4px 15px rgba(0, 0, 0, 0.1)');
 
     function showTooltip(event: any, d: Node) {
       tooltip
         .style('visibility', 'visible')
         .html(`
           <div>
-            <strong>ID:</strong> ${d.id}<br/>
-            <strong>Type:</strong> ${d.type}<br/>
-            ${d.content ? `<strong>Content:</strong> ${d.content.substring(0, 100)}${d.content.length > 100 ? '...' : ''}` : ''}
+            <strong class="text-blue-600">ID:</strong> ${d.id}<br/>
+            <strong class="text-blue-600">Type:</strong> ${d.type}<br/>
+            ${d.content ? `<strong class="text-blue-600">Content:</strong> ${d.content.substring(0, 100)}${d.content.length > 100 ? '...' : ''}` : ''}
           </div>
         `)
         .style('left', (event.pageX + 15) + 'px')
@@ -190,8 +310,8 @@ const GraphVisualizer: React.FC<GraphVisualizerProps> = ({
   }, [data, width, height, onNodeClick]);
 
   return (
-    <div className={`graph-visualizer ${className}`}>
-      <svg ref={svgRef} />
+    <div className={`graph-visualizer glass-effect rounded-xl p-2 ${className}`}>
+      <svg ref={svgRef} className="rounded-lg overflow-hidden" />
     </div>
   );
 };
