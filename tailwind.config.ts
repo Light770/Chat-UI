@@ -68,6 +68,7 @@ const config: Config = {
       },
       fontFamily: {
         sans: [
+          'Monserrat',
           'Inter',
           'ui-sans-serif',
           'system-ui',
